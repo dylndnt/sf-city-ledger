@@ -28,10 +28,13 @@ export function render(data, group = 'All city funds', fundCode = '') {
       <span class="fund-card-stats"><span><small>Revenue</small><strong>${money(scope.revenueTotal)}</strong></span><span><small>Spending</small><strong>${money(scope.spendingTotal)}</strong></span></span>
     </button>`;
   };
+  const groupFunds = data.funds.filter(f => f.fundGroup === group);
+  const nameCounts = new Map();
+  for (const fund of groupFunds) nameCounts.set(fund.fund, (nameCounts.get(fund.fund) ?? 0) + 1);
   const options = group === 'All city funds' ? '' : `<label class="fund-picker">Explore an individual fund
-    <select id="fund-select"><option value="">All funds in ${safe(group)}</option>${data.funds
-      .filter(f => f.fundGroup === group).sort((a, b) => a.fund.localeCompare(b.fund))
-      .map(f => `<option value="${safe(f.fundCode)}" ${fundCode === f.fundCode ? 'selected' : ''}>${safe(f.fund)}</option>`).join('')}
+    <select id="fund-select"><option value="">All funds in ${safe(group)}</option>${groupFunds
+      .sort((a, b) => a.fund.localeCompare(b.fund))
+      .map(f => `<option value="${safe(f.fundCode)}" ${fundCode === f.fundCode ? 'selected' : ''}>${safe(f.fund)}${nameCounts.get(f.fund) > 1 ? ` (${safe(f.fundCode)})` : ''}</option>`).join('')}
     </select></label>`;
   return `<header class="page-header">
       <div class="masthead"><span class="brand-mark" aria-hidden="true">SF<span>↗</span></span><span>THE CITY LEDGER</span><span class="masthead-right">PUBLIC FINANCE / 2025</span></div>
@@ -48,6 +51,6 @@ export function render(data, group = 'All city funds', fundCode = '') {
       <section class="panel funds-panel" aria-labelledby="funds-heading"><div class="panel-top"><span class="step">02 / ACCOUNTS</span><span class="panel-icon" aria-hidden="true">◇</span></div><h2 id="funds-heading">City funds</h2><p class="panel-description funds-intro">Funds are the accounting layer between sources and uses. Select one to see both sides.</p><div class="fund-cards">${fundOrder.map(card).join('')}</div>${options}</section>
       <section class="panel spending-panel" aria-labelledby="spending-heading"><div class="panel-top"><span class="step">03 / USES</span><span class="panel-icon" aria-hidden="true">↑</span></div><h2 id="spending-heading">Recorded spending</h2><p class="total">${money(view.spendingTotal)}</p><p class="panel-description">Where departments recorded spending</p>${bars(spending, view.spendingTotal, 'spending')}</section>
     </div>
-    <aside class="how-to-read"><span class="note-icon" aria-hidden="true">i</span><div><h2>How to read this</h2><p>Revenue and spending are recorded separately within each fund, so their annual totals need not match. Transfers and work orders can appear on both sides; signed adjustments reduce double counting. These records do not trace a specific tax dollar to a specific service. Amounts are nominal US dollars.</p></div></aside>
+    <aside class="how-to-read"><span class="note-icon" aria-hidden="true">i</span><div><h2>How to read this</h2><p>These are accounting actuals, not a cash ledger. Revenue and spending are recorded separately within each fund, so their annual totals need not match. Transfers and work orders can appear on both sides; signed adjustments reduce double counting. These records do not trace a specific tax dollar to a specific service. Amounts are nominal US dollars.</p></div></aside>
     <footer><span>THE CITY LEDGER <span aria-hidden="true">/</span> SAN FRANCISCO</span><a href="${safe(data.sourceUrl)}">View the underlying dataset ↗</a></footer>`;
 }
