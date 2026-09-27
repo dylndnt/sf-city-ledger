@@ -1,0 +1,1721 @@
+{
+  "id" : "bpnb-jwfb",
+  "name" : "Spending and Revenue",
+  "assetType" : "dataset",
+  "attribution" : "SF Controller's Office",
+  "attributionLink" : "http://openbook.sfgov.org",
+  "averageRating" : 0,
+  "category" : "City Management and Ethics",
+  "createdAt" : 1364935607,
+  "description" : "The San Francisco Controller's Office maintains a database of spending and revenue data sourced from it's citywide financial system. This data is presented on the Spending and Revenue report hosted at http://openbook.sfgov.org, and is also available in this dataset in CSV format. New data is added on a weekly basis, and is available from fiscal year 2000 forward.",
+  "diciBackend" : false,
+  "displayType" : "table",
+  "domainCName" : "data.sf.gov",
+  "downloadCount" : 7717,
+  "hideFromCatalog" : false,
+  "hideFromDataJson" : false,
+  "licenseId" : "PDDL",
+  "locked" : false,
+  "newBackend" : true,
+  "numberOfComments" : 0,
+  "oid" : 41207156,
+  "provenance" : "official",
+  "publicationAppendEnabled" : true,
+  "publicationDate" : 1742337160,
+  "publicationGroup" : 771456,
+  "publicationStage" : "published",
+  "rowsUpdatedAt" : 1789986154,
+  "rowsUpdatedBy" : "dbag-6qd9",
+  "tableId" : 19815725,
+  "totalTimesRated" : 0,
+  "viewCount" : 18478,
+  "viewLastModified" : 1789985205,
+  "viewType" : "tabular",
+  "approvals" : [ {
+    "reviewedAt" : 1604100073,
+    "reviewedAutomatically" : false,
+    "state" : "approved",
+    "submissionId" : 6797716,
+    "submissionObject" : "public_audience_request",
+    "submissionOutcome" : "change_audience",
+    "submittedAt" : 1603824232,
+    "targetAudience" : "public",
+    "workflowId" : 2546,
+    "reviewer" : {
+      "id" : "s7k8-df3k",
+      "displayName" : "Jason Lally"
+    },
+    "submissionDetails" : {
+      "permissionType" : "READ"
+    },
+    "submissionOutcomeApplication" : {
+      "endedAt" : 1604100074,
+      "failureCount" : 0,
+      "startedAt" : 1604100073,
+      "status" : "success"
+    },
+    "submitter" : {
+      "id" : "dbag-6qd9",
+      "displayName" : "OpenData"
+    }
+  }, {
+    "message" : "The `strict_permissions` flag must be on to enable internal approvals.",
+    "state" : "unsubmittable",
+    "targetAudience" : "internal",
+    "workflowId" : 5264
+  } ],
+  "clientContext" : {
+    "clientContextVariables" : [ ],
+    "inheritedVariables" : { }
+  },
+  "columns" : [ {
+    "id" : 607602572,
+    "name" : "Fiscal Year",
+    "dataTypeName" : "text",
+    "description" : "An accounting period of 12 months. The City and County of San Francisco operates on a fiscal year that begins on July 1 and ends on June 30 the following year. The Fiscal Year ending June 30, 2012 is represented as FY2011-2012.",
+    "fieldName" : "fiscal_year",
+    "position" : 1,
+    "renderTypeName" : "text",
+    "tableColumnId" : 118979059,
+    "cachedContents" : {
+      "non_null" : "776841",
+      "largest" : "2027",
+      "null" : "0",
+      "top" : [ {
+        "item" : "2017",
+        "count" : "31859"
+      }, {
+        "item" : "2016",
+        "count" : "30726"
+      }, {
+        "item" : "2015",
+        "count" : "29873"
+      }, {
+        "item" : "2014",
+        "count" : "29604"
+      }, {
+        "item" : "2013",
+        "count" : "29387"
+      }, {
+        "item" : "2012",
+        "count" : "28654"
+      }, {
+        "item" : "2010",
+        "count" : "28579"
+      }, {
+        "item" : "2011",
+        "count" : "28380"
+      }, {
+        "item" : "2020",
+        "count" : "28216"
+      }, {
+        "item" : "2009",
+        "count" : "28196"
+      }, {
+        "item" : "2021",
+        "count" : "27852"
+      }, {
+        "item" : "2008",
+        "count" : "27659"
+      }, {
+        "item" : "2007",
+        "count" : "27219"
+      }, {
+        "item" : "2006",
+        "count" : "27003"
+      }, {
+        "item" : "2026",
+        "count" : "26901"
+      }, {
+        "item" : "2023",
+        "count" : "26824"
+      }, {
+        "item" : "2024",
+        "count" : "26769"
+      }, {
+        "item" : "2025",
+        "count" : "26672"
+      }, {
+        "item" : "2022",
+        "count" : "26512"
+      }, {
+        "item" : "2005",
+        "count" : "25930"
+      } ],
+      "smallest" : "1999",
+      "count" : "776841",
+      "cardinality" : "776841"
+    },
+    "format" : {
+      "precisionStyle" : "standard",
+      "noCommas" : "true",
+      "align" : "right"
+    }
+  }, {
+    "id" : 607602573,
+    "name" : "Related Govt Units",
+    "dataTypeName" : "text",
+    "description" : "",
+    "fieldName" : "related_govt_units",
+    "position" : 2,
+    "renderTypeName" : "text",
+    "tableColumnId" : 9139505,
+    "cachedContents" : {
+      "non_null" : "776841",
+      "largest" : "YES",
+      "null" : "0",
+      "top" : [ {
+        "item" : "No",
+        "count" : "510621"
+      }, {
+        "item" : "NO",
+        "count" : "246859"
+      }, {
+        "item" : "Yes",
+        "count" : "11931"
+      }, {
+        "item" : "YES",
+        "count" : "7430"
+      } ],
+      "smallest" : "No",
+      "count" : "776841",
+      "cardinality" : "776841"
+    },
+    "format" : { }
+  }, {
+    "id" : 607602574,
+    "name" : "Organization Group Code",
+    "dataTypeName" : "text",
+    "description" : "Org Group is a group of Departments. For example, the Public Protection Org Group includes departments such as the Police, Fire, Adult Probation, District Attorney, and Sheriff.",
+    "fieldName" : "organization_group_code",
+    "position" : 3,
+    "renderTypeName" : "text",
+    "tableColumnId" : 18844660,
+    "cachedContents" : {
+      "non_null" : "776841",
+      "largest" : "07",
+      "null" : "0",
+      "top" : [ {
+        "item" : "02",
+        "count" : "295455"
+      }, {
+        "item" : "06",
+        "count" : "149935"
+      }, {
+        "item" : "01",
+        "count" : "92313"
+      }, {
+        "item" : "05",
+        "count" : "85678"
+      }, {
+        "item" : "04",
+        "count" : "80303"
+      }, {
+        "item" : "03",
+        "count" : "65108"
+      }, {
+        "item" : "07",
+        "count" : "8049"
+      } ],
+      "smallest" : "01",
+      "count" : "776841",
+      "cardinality" : "776841"
+    },
+    "format" : {
+      "align" : "left"
+    }
+  }, {
+    "id" : 607602575,
+    "name" : "Organization Group",
+    "dataTypeName" : "text",
+    "description" : "Org Group is a group of Departments. For example, the Public Protection Org Group includes departments such as the Police, Fire, Adult Probation, District Attorney, and Sheriff.",
+    "fieldName" : "organization_group",
+    "position" : 4,
+    "renderTypeName" : "text",
+    "tableColumnId" : 9139506,
+    "cachedContents" : {
+      "non_null" : "776841",
+      "largest" : "Public Works, Transportation & Commerce",
+      "null" : "0",
+      "top" : [ {
+        "item" : "Public Works, Transportation & Commerce",
+        "count" : "295455"
+      }, {
+        "item" : "General Administration & Finance",
+        "count" : "149935"
+      }, {
+        "item" : "Public Protection",
+        "count" : "92313"
+      }, {
+        "item" : "Culture & Recreation",
+        "count" : "85678"
+      }, {
+        "item" : "Community Health",
+        "count" : "80303"
+      }, {
+        "item" : "Human Welfare & Neighborhood Development",
+        "count" : "65108"
+      }, {
+        "item" : "General City Responsibilities",
+        "count" : "8049"
+      } ],
+      "smallest" : "Community Health",
+      "count" : "776841",
+      "cardinality" : "776841"
+    },
+    "format" : {
+      "align" : "left"
+    }
+  }, {
+    "id" : 607602576,
+    "name" : "Department Code",
+    "dataTypeName" : "text",
+    "description" : "Departments are the primary organizational unit used by the City and County of San Francisco. Examples include Recreation and Parks, Public Works, and the Police Department.",
+    "fieldName" : "department_code",
+    "position" : 5,
+    "renderTypeName" : "text",
+    "tableColumnId" : 18844661,
+    "cachedContents" : {
+      "non_null" : "776841",
+      "largest" : "WTR",
+      "null" : "0",
+      "top" : [ {
+        "item" : "DPW",
+        "count" : "97672"
+      }, {
+        "item" : "DPH",
+        "count" : "80303"
+      }, {
+        "item" : "MTA",
+        "count" : "56582"
+      }, {
+        "item" : "PUC",
+        "count" : "44104"
+      }, {
+        "item" : "REC",
+        "count" : "41596"
+      }, {
+        "item" : "ADM",
+        "count" : "40118"
+      }, {
+        "item" : "ART",
+        "count" : "21546"
+      }, {
+        "item" : "AIR",
+        "count" : "21256"
+      }, {
+        "item" : "POL",
+        "count" : "17854"
+      }, {
+        "item" : "DSS",
+        "count" : "17729"
+      }, {
+        "item" : "PRT",
+        "count" : "17396"
+      }, {
+        "item" : "SHF",
+        "count" : "17288"
+      }, {
+        "item" : "WTR",
+        "count" : "16966"
+      }, {
+        "item" : "TIS",
+        "count" : "16753"
+      }, {
+        "item" : "MYR",
+        "count" : "16528"
+      }, {
+        "item" : "HRD",
+        "count" : "16416"
+      }, {
+        "item" : "HHP",
+        "count" : "13932"
+      }, {
+        "item" : "FIR",
+        "count" : "12880"
+      }, {
+        "item" : "ENV",
+        "count" : "12542"
+      }, {
+        "item" : "TTX",
+        "count" : "11945"
+      } ],
+      "smallest" : "AAM",
+      "count" : "776841",
+      "cardinality" : "776841"
+    },
+    "format" : {
+      "align" : "left"
+    }
+  }, {
+    "id" : 607602577,
+    "name" : "Department",
+    "dataTypeName" : "text",
+    "description" : "Departments are the primary organizational unit used by the City and County of San Francisco. Examples include Recreation and Parks, Public Works, and the Police Department.",
+    "fieldName" : "department",
+    "position" : 6,
+    "renderTypeName" : "text",
+    "tableColumnId" : 9139507,
+    "cachedContents" : {
+      "non_null" : "776840",
+      "largest" : "WWE Wastewater Enterprise",
+      "null" : "1",
+      "top" : [ {
+        "item" : "DPH Public Health",
+        "count" : "80303"
+      }, {
+        "item" : "DPW GSA - Public Works",
+        "count" : "58888"
+      }, {
+        "item" : "MTA Municipal Transprtn Agncy",
+        "count" : "56582"
+      }, {
+        "item" : "REC Recreation & Park Commsn",
+        "count" : "41596"
+      }, {
+        "item" : "DPW Public Works",
+        "count" : "38784"
+      }, {
+        "item" : "ADM Gen Svcs Agency-City Admin",
+        "count" : "27858"
+      }, {
+        "item" : "PUC Public Utilities Commsn",
+        "count" : "26258"
+      }, {
+        "item" : "HSA Human Services Agency",
+        "count" : "22577"
+      }, {
+        "item" : "ART Arts Commission",
+        "count" : "21546"
+      }, {
+        "item" : "AIR Airport Commission",
+        "count" : "21256"
+      }, {
+        "item" : "POL Police",
+        "count" : "17854"
+      }, {
+        "item" : "PUB Public Utilities Bureaus",
+        "count" : "17846"
+      }, {
+        "item" : "PRT Port",
+        "count" : "17396"
+      }, {
+        "item" : "SHF Sheriff",
+        "count" : "17288"
+      }, {
+        "item" : "WTR Water Enterprise",
+        "count" : "16966"
+      }, {
+        "item" : "MYR Mayor",
+        "count" : "16528"
+      }, {
+        "item" : "HRD Human Resources",
+        "count" : "16416"
+      }, {
+        "item" : "HHP Hetch Hetchy Water & Power",
+        "count" : "13932"
+      }, {
+        "item" : "FIR Fire Department",
+        "count" : "12880"
+      }, {
+        "item" : "ENV Environment",
+        "count" : "12542"
+      } ],
+      "smallest" : "AAM Asian Art Museum",
+      "count" : "776841",
+      "cardinality" : "776841"
+    },
+    "format" : {
+      "align" : "left"
+    }
+  }, {
+    "id" : 607602578,
+    "name" : "Program Code",
+    "dataTypeName" : "text",
+    "description" : "A program identifies the services a department provides. For example, the Police Department has programs for Patrol, Investigations, and Administration.",
+    "fieldName" : "program_code",
+    "position" : 7,
+    "renderTypeName" : "text",
+    "tableColumnId" : 18844662,
+    "cachedContents" : {
+      "non_null" : "776428",
+      "largest" : "ZZZ",
+      "null" : "413",
+      "top" : [ {
+        "item" : "OPR",
+        "count" : "151042"
+      }, {
+        "item" : "CAP",
+        "count" : "50817"
+      }, {
+        "item" : "BAW",
+        "count" : "14677"
+      }, {
+        "item" : "CAPCP",
+        "count" : "14662"
+      }, {
+        "item" : "ADMIN",
+        "count" : "11615"
+      }, {
+        "item" : "RCVY",
+        "count" : "10203"
+      }, {
+        "item" : "D1H",
+        "count" : "7689"
+      }, {
+        "item" : "XXX",
+        "count" : "7545"
+      }, {
+        "item" : "BCI",
+        "count" : "7136"
+      }, {
+        "item" : "FAL",
+        "count" : "6923"
+      }, {
+        "item" : "BE2",
+        "count" : "6762"
+      }, {
+        "item" : "MAINT",
+        "count" : "6756"
+      }, {
+        "item" : "BDA",
+        "count" : "6318"
+      }, {
+        "item" : "ECS",
+        "count" : "6175"
+      }, {
+        "item" : "DA5",
+        "count" : "5696"
+      }, {
+        "item" : "BAR",
+        "count" : "5240"
+      }, {
+        "item" : "BKG",
+        "count" : "5189"
+      }, {
+        "item" : "BAX",
+        "count" : "4535"
+      }, {
+        "item" : "BKY",
+        "count" : "4444"
+      }, {
+        "item" : "DHP",
+        "count" : "4197"
+      } ],
+      "smallest" : "AAD",
+      "count" : "776841",
+      "cardinality" : "776841"
+    },
+    "format" : {
+      "align" : "left"
+    }
+  }, {
+    "id" : 607602579,
+    "name" : "Program",
+    "dataTypeName" : "text",
+    "description" : "A program identifies the services a department provides. For example, the Police Department has programs for Patrol, Investigations, and Administration.",
+    "fieldName" : "program",
+    "position" : 8,
+    "renderTypeName" : "text",
+    "tableColumnId" : 9139508,
+    "cachedContents" : {
+      "non_null" : "776428",
+      "largest" : "Zoo Operations",
+      "null" : "413",
+      "top" : [ {
+        "item" : "Operating",
+        "count" : "151042"
+      }, {
+        "item" : "Capital",
+        "count" : "50721"
+      }, {
+        "item" : "Administration",
+        "count" : "19302"
+      }, {
+        "item" : "City Capital Projects",
+        "count" : "14677"
+      }, {
+        "item" : "Capital-CPC Funded",
+        "count" : "14662"
+      }, {
+        "item" : "Administrative",
+        "count" : "11615"
+      }, {
+        "item" : "Maintenance",
+        "count" : "11201"
+      }, {
+        "item" : "Disaster Recovery",
+        "count" : "10203"
+      }, {
+        "item" : "No Program Defined",
+        "count" : "9602"
+      }, {
+        "item" : "SFGH - Acute Care - Hospital",
+        "count" : "7689"
+      }, {
+        "item" : "Water Capital Projects",
+        "count" : "7136"
+      }, {
+        "item" : "Children's Baseline",
+        "count" : "6923"
+      }, {
+        "item" : "Parking & Traffic",
+        "count" : "6762"
+      }, {
+        "item" : "Capital Projects",
+        "count" : "6180"
+      }, {
+        "item" : "Laguna Honda - Long Term Care",
+        "count" : "5696"
+      }, {
+        "item" : "Engineering",
+        "count" : "5371"
+      }, {
+        "item" : "Building Repair And Maintenance",
+        "count" : "5240"
+      }, {
+        "item" : "Traffic Engineering & Operation",
+        "count" : "5189"
+      }, {
+        "item" : "Neighborhood Services",
+        "count" : "4703"
+      }, {
+        "item" : "Wastewater Operations",
+        "count" : "4535"
+      } ],
+      "smallest" : "1660 Mission Street Building",
+      "count" : "776841",
+      "cardinality" : "776841"
+    },
+    "format" : {
+      "align" : "left"
+    }
+  }, {
+    "id" : 607602580,
+    "name" : "Character Code",
+    "dataTypeName" : "text",
+    "description" : "In the type hierarchy, Character is the highest level. For example, salaries, benefits, contractual services, and materials & supplies are recorded as different Characters. ",
+    "fieldName" : "character_code",
+    "position" : 9,
+    "renderTypeName" : "text",
+    "tableColumnId" : 18844663,
+    "cachedContents" : {
+      "non_null" : "776841",
+      "largest" : "TFR_OUT_CAP_EXP",
+      "null" : "0",
+      "top" : [ {
+        "item" : "513",
+        "count" : "121985"
+      }, {
+        "item" : "521",
+        "count" : "117162"
+      }, {
+        "item" : "501",
+        "count" : "68249"
+      }, {
+        "item" : "MAND_FRING_BEN",
+        "count" : "66971"
+      }, {
+        "item" : "540",
+        "count" : "65771"
+      }, {
+        "item" : "NON_PERS_SVCS",
+        "count" : "52519"
+      }, {
+        "item" : "581",
+        "count" : "41175"
+      }, {
+        "item" : "SALARIES",
+        "count" : "33429"
+      }, {
+        "item" : "865",
+        "count" : "24444"
+      }, {
+        "item" : "MTL_SUPP",
+        "count" : "23205"
+      }, {
+        "item" : "SVCS_OTHER_DEPTS",
+        "count" : "19041"
+      }, {
+        "item" : "460",
+        "count" : "14884"
+      }, {
+        "item" : "EXP_RECOVERY",
+        "count" : "11867"
+      }, {
+        "item" : "520",
+        "count" : "11590"
+      }, {
+        "item" : "OH_ALLOCS",
+        "count" : "8903"
+      }, {
+        "item" : "ELS",
+        "count" : "8113"
+      }, {
+        "item" : "ELU",
+        "count" : "8113"
+      }, {
+        "item" : "CHGS_FOR_SERVICES",
+        "count" : "7801"
+      }, {
+        "item" : "560",
+        "count" : "6300"
+      }, {
+        "item" : "475",
+        "count" : "5117"
+      } ],
+      "smallest" : "406",
+      "count" : "776841",
+      "cardinality" : "776841"
+    },
+    "format" : {
+      "align" : "left"
+    }
+  }, {
+    "id" : 607602581,
+    "name" : "Character",
+    "dataTypeName" : "text",
+    "description" : "In the type hierarchy, Character is the highest level. For example, salaries, benefits, contractual services, and materials & supplies are recorded as different Characters. ",
+    "fieldName" : "character",
+    "position" : 10,
+    "renderTypeName" : "text",
+    "tableColumnId" : 9139509,
+    "cachedContents" : {
+      "non_null" : "776595",
+      "largest" : "Transfers Out",
+      "null" : "246",
+      "top" : [ {
+        "item" : "Mandatory Fringe Benefits",
+        "count" : "188956"
+      }, {
+        "item" : "Non Personnel Services",
+        "count" : "117162"
+      }, {
+        "item" : "Salaries",
+        "count" : "101678"
+      }, {
+        "item" : "Materials & Supplies",
+        "count" : "88976"
+      }, {
+        "item" : "Services Of Other Depts",
+        "count" : "60216"
+      }, {
+        "item" : "Non-Personnel Services",
+        "count" : "52519"
+      }, {
+        "item" : "Expenditure Recovery",
+        "count" : "36311"
+      }, {
+        "item" : "Overhead and Allocations",
+        "count" : "20493"
+      }, {
+        "item" : "Charges For Services",
+        "count" : "14884"
+      }, {
+        "item" : "Capital Outlay",
+        "count" : "9272"
+      }, {
+        "item" : "Interest & Investment Income",
+        "count" : "8120"
+      }, {
+        "item" : "Charges for Services",
+        "count" : "7801"
+      }, {
+        "item" : "Other Revenues",
+        "count" : "7743"
+      }, {
+        "item" : "Transfer Adjustments-Sources",
+        "count" : "6161"
+      }, {
+        "item" : "Transfer Adjustments-Uses",
+        "count" : "6161"
+      }, {
+        "item" : "Rents & Concessions",
+        "count" : "4773"
+      }, {
+        "item" : "Property Taxes",
+        "count" : "4396"
+      }, {
+        "item" : "Intergovernmental Rev-State",
+        "count" : "3315"
+      }, {
+        "item" : "Intergovernmental Rev-Federal",
+        "count" : "3303"
+      }, {
+        "item" : "Debt Service",
+        "count" : "2525"
+      } ],
+      "smallest" : "Aid Assistance",
+      "count" : "776841",
+      "cardinality" : "776841"
+    },
+    "format" : {
+      "align" : "left"
+    }
+  }, {
+    "id" : 607602582,
+    "name" : "Object Code",
+    "dataTypeName" : "text",
+    "description" : "In the type hierarchy, Object is the middle level. For example, within the Salaries Character, Objects differentiate between Permanent Salaries, Temporary Salaries, and Overtime pay. ",
+    "fieldName" : "object_code",
+    "position" : 11,
+    "renderTypeName" : "text",
+    "tableColumnId" : 18844664,
+    "cachedContents" : {
+      "non_null" : "776595",
+      "largest" : "WATER_SEW_TRT_SUPP",
+      "null" : "246",
+      "top" : [ {
+        "item" : "501",
+        "count" : "41934"
+      }, {
+        "item" : "581",
+        "count" : "41168"
+      }, {
+        "item" : "515",
+        "count" : "31750"
+      }, {
+        "item" : "535",
+        "count" : "30048"
+      }, {
+        "item" : "549",
+        "count" : "28565"
+      }, {
+        "item" : "514",
+        "count" : "25993"
+      }, {
+        "item" : "865",
+        "count" : "23023"
+      }, {
+        "item" : "527",
+        "count" : "21121"
+      }, {
+        "item" : "HLTH_SVC",
+        "count" : "20742"
+      }, {
+        "item" : "519",
+        "count" : "20676"
+      }, {
+        "item" : "513",
+        "count" : "18434"
+      }, {
+        "item" : "542",
+        "count" : "15772"
+      }, {
+        "item" : "OTH_FR_BEN",
+        "count" : "14968"
+      }, {
+        "item" : "PERM_SAL_MISC",
+        "count" : "14542"
+      }, {
+        "item" : "PROF_SPEC_SVC",
+        "count" : "13466"
+      }, {
+        "item" : "SOC_SEC",
+        "count" : "13065"
+      }, {
+        "item" : "516",
+        "count" : "12768"
+      }, {
+        "item" : "517",
+        "count" : "12361"
+      }, {
+        "item" : "OTH_CURR_EXP",
+        "count" : "11869"
+      }, {
+        "item" : "EXP_REC_SVC_AAO_FND",
+        "count" : "11399"
+      } ],
+      "smallest" : "072",
+      "count" : "776841",
+      "cardinality" : "776841"
+    },
+    "format" : {
+      "align" : "left"
+    }
+  }, {
+    "id" : 607602583,
+    "name" : "Object",
+    "dataTypeName" : "text",
+    "description" : "In the type hierarchy, Object is the middle level. For example, within the Salaries Character, Objects differentiate between Permanent Salaries, Temporary Salaries, and Overtime pay. ",
+    "fieldName" : "object",
+    "position" : 12,
+    "renderTypeName" : "text",
+    "tableColumnId" : 9139510,
+    "cachedContents" : {
+      "non_null" : "776595",
+      "largest" : "Working Families Credit Pymnts",
+      "null" : "246",
+      "top" : [ {
+        "item" : "Health Service",
+        "count" : "52492"
+      }, {
+        "item" : "Permanent Salaries-Misc",
+        "count" : "41934"
+      }, {
+        "item" : "Other Current Expenses",
+        "count" : "41917"
+      }, {
+        "item" : "Svcs Of Other Depts -AAO Funds",
+        "count" : "41168"
+      }, {
+        "item" : "Social Security",
+        "count" : "39058"
+      }, {
+        "item" : "Other Fringe Benefits",
+        "count" : "35644"
+      }, {
+        "item" : "Other Materials & Supplies",
+        "count" : "28565"
+      }, {
+        "item" : "Retirement",
+        "count" : "25808"
+      }, {
+        "item" : "Recovery for Svcs to AAO Funds",
+        "count" : "23023"
+      }, {
+        "item" : "Profess & Specialized Svcs",
+        "count" : "21121"
+      }, {
+        "item" : "Dental Coverage",
+        "count" : "19190"
+      }, {
+        "item" : "Overhead",
+        "count" : "18752"
+      }, {
+        "item" : "Unemployment Insurance",
+        "count" : "16761"
+      }, {
+        "item" : "Building & Constructn Supplies",
+        "count" : "15772"
+      }, {
+        "item" : "Permanent Salaries - Misc",
+        "count" : "14542"
+      }, {
+        "item" : "Professional/Specialized Svcs",
+        "count" : "13466"
+      }, {
+        "item" : "Travel",
+        "count" : "13031"
+      }, {
+        "item" : "Premium Pay",
+        "count" : "12874"
+      }, {
+        "item" : "Expend Recov Svc to AAO Fund",
+        "count" : "11399"
+      }, {
+        "item" : "Overtime",
+        "count" : "11156"
+      } ],
+      "smallest" : "ADM CMD Contractor Development",
+      "count" : "776841",
+      "cardinality" : "776841"
+    },
+    "format" : {
+      "align" : "left"
+    }
+  }, {
+    "id" : 607602584,
+    "name" : "Sub-object Code",
+    "dataTypeName" : "text",
+    "description" : "In the type hierarchy, Sub-object is the lowest level of detail. For instance, within the Overtime Object, Sub-object segregates overtime for nurses from overtime for police officers and fire fighters (known as uniformed staff).",
+    "fieldName" : "sub_object_code",
+    "position" : 13,
+    "renderTypeName" : "text",
+    "tableColumnId" : 18844665,
+    "cachedContents" : {
+      "non_null" : "776841",
+      "largest" : "NKEY",
+      "null" : "0",
+      "top" : [ {
+        "item" : "501010",
+        "count" : "20090"
+      }, {
+        "item" : "514020",
+        "count" : "19587"
+      }, {
+        "item" : "514010",
+        "count" : "19471"
+      }, {
+        "item" : "516010",
+        "count" : "19187"
+      }, {
+        "item" : "515010",
+        "count" : "19154"
+      }, {
+        "item" : "519120",
+        "count" : "18036"
+      }, {
+        "item" : "517010",
+        "count" : "16761"
+      }, {
+        "item" : "513010",
+        "count" : "16419"
+      }, {
+        "item" : "515710",
+        "count" : "13022"
+      }, {
+        "item" : "509010",
+        "count" : "12979"
+      }, {
+        "item" : "501050",
+        "count" : "12291"
+      }, {
+        "item" : "501020",
+        "count" : "11439"
+      }, {
+        "item" : "515020",
+        "count" : "11299"
+      }, {
+        "item" : "501040",
+        "count" : "11026"
+      }, {
+        "item" : "527990",
+        "count" : "10843"
+      }, {
+        "item" : "511010",
+        "count" : "9740"
+      }, {
+        "item" : "519110",
+        "count" : "9145"
+      }, {
+        "item" : "535990",
+        "count" : "7824"
+      }, {
+        "item" : "513710",
+        "count" : "7788"
+      }, {
+        "item" : "549990",
+        "count" : "7404"
+      } ],
+      "smallest" : "00310",
+      "count" : "776841",
+      "cardinality" : "776841"
+    },
+    "format" : {
+      "align" : "left"
+    }
+  }, {
+    "id" : 607602585,
+    "name" : "Sub-object",
+    "dataTypeName" : "text",
+    "description" : "In the type hierarchy, Sub-object is the lowest level of detail. For instance, within the Overtime Object, Sub-object segregates overtime for nurses from overtime for police officers and fire fighters (known as uniformed staff).",
+    "fieldName" : "sub_object",
+    "position" : 14,
+    "renderTypeName" : "text",
+    "tableColumnId" : 9139511,
+    "cachedContents" : {
+      "non_null" : "776595",
+      "largest" : "Zellerbach Rehearsal Hall",
+      "null" : "246",
+      "top" : [ {
+        "item" : "Perm Salaries-Misc-Regular",
+        "count" : "20090"
+      }, {
+        "item" : "Social Sec-Medicare(HI Only)",
+        "count" : "19587"
+      }, {
+        "item" : "Dental Coverage",
+        "count" : "19187"
+      }, {
+        "item" : "Health Service-City Match",
+        "count" : "19154"
+      }, {
+        "item" : "Long Term Disability Insurance",
+        "count" : "18036"
+      }, {
+        "item" : "Unemployment Insurance",
+        "count" : "16761"
+      }, {
+        "item" : "Retire City Misc",
+        "count" : "16419"
+      }, {
+        "item" : "Dependent Coverage",
+        "count" : "13022"
+      }, {
+        "item" : "Premium Pay - Misc",
+        "count" : "12979"
+      }, {
+        "item" : "Social Security (Oasdi & Hi)",
+        "count" : "12967"
+      }, {
+        "item" : "Misc-Other Timeoff",
+        "count" : "12291"
+      }, {
+        "item" : "Misc-Sick Pay",
+        "count" : "11439"
+      }, {
+        "item" : "Retiree Health-Match-Prop B",
+        "count" : "11299"
+      }, {
+        "item" : "Misc-Vacation",
+        "count" : "11026"
+      }, {
+        "item" : "Other Professional Services",
+        "count" : "10843"
+      }, {
+        "item" : "Overtime - Scheduled Misc",
+        "count" : "9740"
+      }, {
+        "item" : "Flexible Benefit Package",
+        "count" : "9145"
+      }, {
+        "item" : "Other Current Expenses",
+        "count" : "7824"
+      }, {
+        "item" : "Retirement Pick Up",
+        "count" : "7788"
+      }, {
+        "item" : "Other Materials & Supplies",
+        "count" : "7404"
+      } ],
+      "smallest" : "10B Adm Code Overhead - Police",
+      "count" : "776841",
+      "cardinality" : "776841"
+    },
+    "format" : {
+      "align" : "left"
+    }
+  }, {
+    "id" : 607602586,
+    "name" : "Fund Type Code",
+    "dataTypeName" : "text",
+    "description" : "In the Fund hierarchy, Fund Type is the highest level, and is used to group Funds according to governmental accounting standards. ",
+    "fieldName" : "fund_type_code",
+    "position" : 15,
+    "renderTypeName" : "text",
+    "tableColumnId" : 18844686,
+    "cachedContents" : {
+      "non_null" : "776841",
+      "largest" : "SP_REV",
+      "null" : "0",
+      "top" : [ {
+        "item" : "1G",
+        "count" : "205578"
+      }, {
+        "item" : "2S",
+        "count" : "115473"
+      }, {
+        "item" : "GEN_FUND",
+        "count" : "84748"
+      }, {
+        "item" : "ENT_FUND",
+        "count" : "68595"
+      }, {
+        "item" : "SP_REV",
+        "count" : "66109"
+      }, {
+        "item" : "5W",
+        "count" : "34571"
+      }, {
+        "item" : "5M",
+        "count" : "22346"
+      }, {
+        "item" : "CPTL_PRJ",
+        "count" : "20662"
+      }, {
+        "item" : "3C",
+        "count" : "20628"
+      }, {
+        "item" : "5A",
+        "count" : "17129"
+      }, {
+        "item" : "5T",
+        "count" : "15421"
+      }, {
+        "item" : "5H",
+        "count" : "14843"
+      }, {
+        "item" : "5P",
+        "count" : "12922"
+      }, {
+        "item" : "5C",
+        "count" : "12724"
+      }, {
+        "item" : "6I",
+        "count" : "12204"
+      }, {
+        "item" : "5N",
+        "count" : "10112"
+      }, {
+        "item" : "5L",
+        "count" : "7101"
+      }, {
+        "item" : "INTRL_SRVC",
+        "count" : "6125"
+      }, {
+        "item" : "7E",
+        "count" : "5698"
+      }, {
+        "item" : "7A",
+        "count" : "3859"
+      } ],
+      "smallest" : "1G",
+      "count" : "776841",
+      "cardinality" : "776841"
+    },
+    "format" : {
+      "align" : "left"
+    }
+  }, {
+    "id" : 607602587,
+    "name" : "Fund Type",
+    "dataTypeName" : "text",
+    "description" : "In the Fund hierarchy, Fund Type is the highest level, and is used to group Funds according to governmental accounting standards. ",
+    "fieldName" : "fund_type",
+    "position" : 16,
+    "renderTypeName" : "text",
+    "tableColumnId" : 9139512,
+    "cachedContents" : {
+      "non_null" : "776841",
+      "largest" : "Treasurer's Group Of Accounts",
+      "null" : "0",
+      "top" : [ {
+        "item" : "General Fund",
+        "count" : "290326"
+      }, {
+        "item" : "Special Revenue Funds",
+        "count" : "181582"
+      }, {
+        "item" : "Enterprise Funds",
+        "count" : "68595"
+      }, {
+        "item" : "Capital Projects Funds",
+        "count" : "41290"
+      }, {
+        "item" : "PUC Water Department Funds",
+        "count" : "34571"
+      }, {
+        "item" : "MTA Municipal Railway Funds",
+        "count" : "22346"
+      }, {
+        "item" : "Internal Service Funds",
+        "count" : "18329"
+      }, {
+        "item" : "SF International Airport Funds",
+        "count" : "17129"
+      }, {
+        "item" : "PUC Hetch Hetchy Funds",
+        "count" : "15421"
+      }, {
+        "item" : "General Hospital Medical Center Funds",
+        "count" : "14843"
+      }, {
+        "item" : "Port Of San Francisco Funds",
+        "count" : "12922"
+      }, {
+        "item" : "PUC Wastewater Funds",
+        "count" : "12724"
+      }, {
+        "item" : "MTA Parking & Traffic Funds",
+        "count" : "10112"
+      }, {
+        "item" : "Laguna Honda Hospital Funds",
+        "count" : "7101"
+      }, {
+        "item" : "Expendable Trust Funds",
+        "count" : "5698"
+      }, {
+        "item" : "Agency Funds",
+        "count" : "4779"
+      }, {
+        "item" : "Pension Trust Funds",
+        "count" : "3126"
+      }, {
+        "item" : "Pension, Other Employee and Ot",
+        "count" : "2871"
+      }, {
+        "item" : "Private Purpose Trust Fund",
+        "count" : "2239"
+      }, {
+        "item" : "Other Employee Benefit Trust Funds",
+        "count" : "2230"
+      } ],
+      "smallest" : "Agency Funds",
+      "count" : "776841",
+      "cardinality" : "776841"
+    },
+    "format" : {
+      "align" : "left"
+    }
+  }, {
+    "id" : 607602588,
+    "name" : "Fund Code",
+    "dataTypeName" : "text",
+    "description" : "In the Fund hierarchy, Fund is the middle level. For example, within the Special Revenue Fund Type, you can find the Children’s Fund and the Open Space & Park Fund. ",
+    "fieldName" : "fund_code",
+    "position" : 17,
+    "renderTypeName" : "text",
+    "tableColumnId" : 18844701,
+    "cachedContents" : {
+      "non_null" : "776841",
+      "largest" : "SP_REV~CHLD_SUPP_SRVCS",
+      "null" : "0",
+      "top" : [ {
+        "item" : "1GAGF",
+        "count" : "202929"
+      }, {
+        "item" : "GEN_FUND~10000",
+        "count" : "42622"
+      }, {
+        "item" : "2SPWF",
+        "count" : "20127"
+      }, {
+        "item" : "GEN_FUND~10020",
+        "count" : "20120"
+      }, {
+        "item" : "5WAAA",
+        "count" : "18014"
+      }, {
+        "item" : "5MAAA",
+        "count" : "15094"
+      }, {
+        "item" : "2SPPF",
+        "count" : "14841"
+      }, {
+        "item" : "5HAAA",
+        "count" : "14350"
+      }, {
+        "item" : "5AAAA",
+        "count" : "14169"
+      }, {
+        "item" : "5TAAA",
+        "count" : "13933"
+      }, {
+        "item" : "5PAAA",
+        "count" : "11258"
+      }, {
+        "item" : "2SCHS",
+        "count" : "11242"
+      }, {
+        "item" : "5WPUC",
+        "count" : "10177"
+      }, {
+        "item" : "ENT_FUND~MTA_TRANSIT",
+        "count" : "9624"
+      }, {
+        "item" : "GEN_FUND~10010",
+        "count" : "9040"
+      }, {
+        "item" : "GEN_FUND~10060",
+        "count" : "9022"
+      }, {
+        "item" : "2SLIB",
+        "count" : "8601"
+      }, {
+        "item" : "2SCRF",
+        "count" : "7890"
+      }, {
+        "item" : "5CAAA",
+        "count" : "7671"
+      }, {
+        "item" : "ENT_FUND~SU_STREETS",
+        "count" : "7332"
+      } ],
+      "smallest" : "1GAGF",
+      "count" : "776841",
+      "cardinality" : "776841"
+    },
+    "format" : {
+      "align" : "left"
+    }
+  }, {
+    "id" : 607602589,
+    "name" : "Fund",
+    "dataTypeName" : "text",
+    "description" : "In the Fund hierarchy, Fund is the middle level. For example, within the Special Revenue Fund Type, you can find the Children’s Fund and the Open Space & Park Fund. ",
+    "fieldName" : "fund",
+    "position" : 18,
+    "renderTypeName" : "text",
+    "tableColumnId" : 9139513,
+    "cachedContents" : {
+      "non_null" : "776836",
+      "largest" : "Water Trust & Agency Fund",
+      "null" : "5",
+      "top" : [ {
+        "item" : "General Fund",
+        "count" : "202929"
+      }, {
+        "item" : "GF Annual Account Ctrl",
+        "count" : "42622"
+      }, {
+        "item" : "Public Works, Transp. & Commerce Fund",
+        "count" : "20127"
+      }, {
+        "item" : "GF Continuing Authority Ctrl",
+        "count" : "20120"
+      }, {
+        "item" : "Water Operating Fund",
+        "count" : "18014"
+      }, {
+        "item" : "Muni Operating Fund",
+        "count" : "15094"
+      }, {
+        "item" : "Public Protection Fund",
+        "count" : "14841"
+      }, {
+        "item" : "General Hopsital Operating Fund",
+        "count" : "14350"
+      }, {
+        "item" : "Airport Operating Fund",
+        "count" : "14169"
+      }, {
+        "item" : "Hetch Hetchy Operating Fund",
+        "count" : "13933"
+      }, {
+        "item" : "PUC Operating Fund",
+        "count" : "12175"
+      }, {
+        "item" : "Port Operating Fund",
+        "count" : "11258"
+      }, {
+        "item" : "Community Health Services Fund",
+        "count" : "11242"
+      }, {
+        "item" : "Transit",
+        "count" : "9624"
+      }, {
+        "item" : "GF Annual Authority Ctrl",
+        "count" : "9040"
+      }, {
+        "item" : "GF Work Order",
+        "count" : "9022"
+      }, {
+        "item" : "Public Library Fund",
+        "count" : "8601"
+      }, {
+        "item" : "Culture & Recreation Fund",
+        "count" : "7890"
+      }, {
+        "item" : "Sustainable Streets",
+        "count" : "7725"
+      }, {
+        "item" : "Wastewater Operating Fund",
+        "count" : "7671"
+      } ],
+      "smallest" : "2001 SFCCD Imprvt Bond-2002A",
+      "count" : "776841",
+      "cardinality" : "776841"
+    },
+    "format" : {
+      "align" : "left"
+    }
+  }, {
+    "id" : 607602590,
+    "name" : "Fund Category Code",
+    "dataTypeName" : "text",
+    "description" : "In the Fund hierarchy, Fund Category is the lowest level. Within Fund, Fund Categories group activity by their characteristics: Operating, Annual Projects, Continuing Projects, Grants, Interdepartmental/Work Order.",
+    "fieldName" : "fund_category_code",
+    "position" : 19,
+    "renderTypeName" : "text",
+    "tableColumnId" : 18844702,
+    "cachedContents" : {
+      "non_null" : "773579",
+      "largest" : "7",
+      "null" : "3262",
+      "top" : [ {
+        "item" : "1",
+        "count" : "371251"
+      }, {
+        "item" : "3",
+        "count" : "192360"
+      }, {
+        "item" : "5",
+        "count" : "71973"
+      }, {
+        "item" : "4",
+        "count" : "59110"
+      }, {
+        "item" : "2",
+        "count" : "48849"
+      }, {
+        "item" : "0",
+        "count" : "22656"
+      }, {
+        "item" : "6",
+        "count" : "7329"
+      }, {
+        "item" : "7",
+        "count" : "51"
+      } ],
+      "smallest" : "0",
+      "count" : "776841",
+      "cardinality" : "776841"
+    },
+    "format" : {
+      "align" : "left"
+    }
+  }, {
+    "id" : 607602591,
+    "name" : "Fund Category",
+    "dataTypeName" : "text",
+    "description" : "In the Fund hierarchy, Fund Category is the lowest level. Within Fund, Fund Categories group activity by their characteristics: Operating, Annual Projects, Continuing Projects, Grants, Interdepartmental/Work Order.",
+    "fieldName" : "fund_category",
+    "position" : 20,
+    "renderTypeName" : "text",
+    "tableColumnId" : 9139514,
+    "cachedContents" : {
+      "non_null" : "773579",
+      "largest" : "Work Orders/Overhead",
+      "null" : "3262",
+      "top" : [ {
+        "item" : "Operating",
+        "count" : "371251"
+      }, {
+        "item" : "Continuing Projects",
+        "count" : "115086"
+      }, {
+        "item" : "Continuing Projects - Authority Control",
+        "count" : "77274"
+      }, {
+        "item" : "Work Orders/Overhead",
+        "count" : "71973"
+      }, {
+        "item" : "Grants",
+        "count" : "42830"
+      }, {
+        "item" : "Annual Projects",
+        "count" : "27204"
+      }, {
+        "item" : "Unspecified",
+        "count" : "22656"
+      }, {
+        "item" : "Annual Projects - Authority Control",
+        "count" : "21645"
+      }, {
+        "item" : "Grants Projects",
+        "count" : "16280"
+      }, {
+        "item" : "Continuing Projects - Project Control",
+        "count" : "7329"
+      }, {
+        "item" : "Continuing Projects - Account Control",
+        "count" : "51"
+      } ],
+      "smallest" : "Annual Projects",
+      "count" : "776841",
+      "cardinality" : "776841"
+    },
+    "format" : {
+      "align" : "left"
+    }
+  }, {
+    "id" : 607602592,
+    "name" : "Revenue or Spending",
+    "dataTypeName" : "text",
+    "description" : "Revenue or Spending",
+    "fieldName" : "revenue_or_spending",
+    "position" : 21,
+    "renderTypeName" : "text",
+    "tableColumnId" : 9139504,
+    "cachedContents" : {
+      "non_null" : "776841",
+      "largest" : "Spending",
+      "null" : "0",
+      "top" : [ {
+        "item" : "Spending",
+        "count" : "661436"
+      }, {
+        "item" : "Revenue",
+        "count" : "115405"
+      } ],
+      "smallest" : "Revenue",
+      "count" : "776841",
+      "cardinality" : "776841"
+    },
+    "format" : {
+      "align" : "left"
+    }
+  }, {
+    "id" : 607602596,
+    "name" : "Amount",
+    "dataTypeName" : "number",
+    "description" : "The amount earned (Revenue) or spent (Spending) by the City and County of San Francisco.",
+    "fieldName" : "amount",
+    "position" : 22,
+    "renderTypeName" : "number",
+    "tableColumnId" : 157464051,
+    "cachedContents" : {
+      "non_null" : "776841",
+      "largest" : "2673070232.17",
+      "null" : "0",
+      "top" : [ {
+        "item" : "0.00",
+        "count" : "670"
+      }, {
+        "item" : "10000.00",
+        "count" : "574"
+      }, {
+        "item" : "5000.00",
+        "count" : "536"
+      }, {
+        "item" : "1000.00",
+        "count" : "468"
+      }, {
+        "item" : "25000.00",
+        "count" : "463"
+      }, {
+        "item" : "200.00",
+        "count" : "456"
+      }, {
+        "item" : "2000.00",
+        "count" : "452"
+      }, {
+        "item" : "50000.00",
+        "count" : "445"
+      }, {
+        "item" : "100.00",
+        "count" : "435"
+      }, {
+        "item" : "20000.00",
+        "count" : "429"
+      }, {
+        "item" : "500.00",
+        "count" : "420"
+      }, {
+        "item" : "40.00",
+        "count" : "397"
+      }, {
+        "item" : "150.00",
+        "count" : "392"
+      }, {
+        "item" : "300.00",
+        "count" : "378"
+      }, {
+        "item" : "100000.00",
+        "count" : "371"
+      }, {
+        "item" : "15000.00",
+        "count" : "355"
+      }, {
+        "item" : "1500.00",
+        "count" : "355"
+      }, {
+        "item" : "3000.00",
+        "count" : "350"
+      }, {
+        "item" : "50.00",
+        "count" : "347"
+      }, {
+        "item" : "250.00",
+        "count" : "308"
+      } ],
+      "smallest" : "-4477861107.15",
+      "count" : "776841",
+      "cardinality" : "776841"
+    },
+    "format" : {
+      "precisionStyle" : "standard",
+      "noCommas" : "false",
+      "align" : "right"
+    }
+  }, {
+    "id" : 607602594,
+    "name" : "data_as_of",
+    "dataTypeName" : "calendar_date",
+    "description" : "Timestamp the data was updated in the source system.",
+    "fieldName" : "data_as_of",
+    "position" : 23,
+    "renderTypeName" : "calendar_date",
+    "tableColumnId" : 152406646,
+    "cachedContents" : {
+      "non_null" : "776841",
+      "largest" : "2026-09-20T23:05:20.000",
+      "null" : "0",
+      "top" : [ {
+        "item" : "2026-09-20T23:05:20.000",
+        "count" : "776841"
+      } ],
+      "smallest" : "2026-09-20T23:05:20.000",
+      "count" : "776841",
+      "cardinality" : "776841"
+    },
+    "format" : {
+      "view" : "date_ymd_time"
+    }
+  }, {
+    "id" : 607602595,
+    "name" : "data_loaded_at",
+    "dataTypeName" : "calendar_date",
+    "description" : "Timestamp the data was loaded to the open data portal.",
+    "fieldName" : "data_loaded_at",
+    "position" : 24,
+    "renderTypeName" : "calendar_date",
+    "tableColumnId" : 152406647,
+    "cachedContents" : {
+      "non_null" : "776841",
+      "largest" : "2026-09-21T03:03:01.000",
+      "null" : "0",
+      "top" : [ {
+        "item" : "2026-09-21T03:03:01.000",
+        "count" : "776841"
+      } ],
+      "smallest" : "2026-09-21T03:03:01.000",
+      "count" : "776841",
+      "cardinality" : "776841"
+    },
+    "format" : {
+      "view" : "date_ymd_time"
+    }
+  } ],
+  "grants" : [ {
+    "inherited" : false,
+    "type" : "viewer",
+    "flags" : [ "public" ]
+  } ],
+  "license" : {
+    "name" : "Open Data Commons Public Domain Dedication and License",
+    "termsLink" : "http://opendatacommons.org/licenses/pddl/1.0/"
+  },
+  "metadata" : {
+    "rdfSubject" : "0",
+    "attachments" : [ {
+      "filename" : "N:\\EIS\\DataCoordination\\Metadata Spring Cleaning\\CON_DataDictionary_Spending-and-Revenue.pdf",
+      "assetId" : "l4Kfvck4E4fPLMGB6_qQdbLzKTmY9X3s8Xcnz0gF-w4",
+      "name" : "CON_DataDictionary_Spending-and-Revenue.pdf"
+    }, {
+      "filename" : "CON_DataDictionary_Spending-and-Revenue.xlsx",
+      "assetId" : "a3921805-5dfd-4d3e-9b64-9f7cd26cd5f5",
+      "name" : "CON_DataDictionary_Spending-and-Revenue.xlsx"
+    } ],
+    "custom_fields" : {
+      "Department Metrics" : {
+        "Publishing Department" : "Controller"
+      },
+      "Internal Management" : {
+        "Inventory ID" : "CON-0003"
+      },
+      "Publishing Details" : {
+        "Data change frequency" : "Weekly",
+        "Program link" : "",
+        "Publishing frequency" : "Weekly",
+        "Geographic unit" : ""
+      }
+    },
+    "rowLabel" : "Row",
+    "availableDisplayTypes" : [ "table", "fatrow", "page" ],
+    "renderTypeConfig" : {
+      "visible" : {
+        "table" : true
+      }
+    }
+  },
+  "owner" : {
+    "id" : "dbag-6qd9",
+    "displayName" : "OpenData",
+    "screenName" : "OpenData",
+    "type" : "interactive",
+    "flags" : [ "acceptedEula" ]
+  },
+  "query" : { },
+  "rights" : [ "read" ],
+  "tableAuthor" : {
+    "id" : "dbag-6qd9",
+    "displayName" : "OpenData",
+    "screenName" : "OpenData",
+    "type" : "interactive",
+    "flags" : [ "acceptedEula" ]
+  },
+  "tags" : [ "spending", "revenue", "amount", "sfopenbook", "open book", "openbook" ],
+  "flags" : [ "default", "federated", "internalToPublicFederatedView", "ownerMayBeContacted", "restorable", "restorePossibleForType" ]
+}
