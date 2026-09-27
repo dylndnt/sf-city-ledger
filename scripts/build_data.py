@@ -117,14 +117,18 @@ def build_snapshot(raw: bytes, fiscal_year: str, processed_at: str) -> dict:
         "fiscalYear": fiscal_year, "dataAsOf": next(iter(timestamps)),
         "processedAt": processed_at, "sourceUrl": SOURCE_URL,
         "sourceSha256": hashlib.sha256(raw).hexdigest(),
+        "sourceRows": count,
         "organizationGroups": dict(sorted(org_labels.items())),
         "funds": [funds[key] for key in sorted(funds)],
     }
 
 
 def write_if_changed(snapshot: dict, path: Path) -> bool:
-    if path.exists() and json.loads(path.read_text(encoding="utf-8"))["sourceSha256"] == snapshot["sourceSha256"]:
-        return False
+    if path.exists():
+        previous = json.loads(path.read_text(encoding="utf-8"))
+        comparable = lambda value: {key: item for key, item in value.items() if key != "processedAt"}
+        if comparable(previous) == comparable(snapshot):
+            return False
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(".json.tmp")
     temporary.write_text(json.dumps(snapshot, sort_keys=True, separators=(",", ":")) + "\n", encoding="utf-8")

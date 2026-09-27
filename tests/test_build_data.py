@@ -38,6 +38,7 @@ class BuildDataTests(unittest.TestCase):
         data = build_snapshot(sample_csv(), "2025", "2026-09-27T00:00:00Z")
         self.assertEqual(data["fiscalYear"], "2025")
         self.assertEqual(data["dataAsOf"], "2026-09-20T23:05:20.000")
+        self.assertEqual(data["sourceRows"], 4)
         self.assertEqual(len(data["funds"]), 1)
         fund = data["funds"][0]
         self.assertEqual(fund["revenueGroups"]["Taxes"], 10_000)
@@ -65,6 +66,15 @@ class BuildDataTests(unittest.TestCase):
             self.assertFalse(write_if_changed(data, path))
             self.assertEqual(path.read_bytes(), before)
             self.assertEqual(json.loads(before)["sourceSha256"], data["sourceSha256"])
+
+    def test_changed_transformation_updates_existing_snapshot(self):
+        data = build_snapshot(sample_csv(), "2025", "2026-09-27T00:00:00Z")
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "fy2025.json"
+            self.assertTrue(write_if_changed(data, path))
+            data["sourceRows"] = 5
+            self.assertTrue(write_if_changed(data, path))
+            self.assertEqual(json.loads(path.read_text(encoding="utf-8"))["sourceRows"], 5)
 
 
 if __name__ == "__main__":
