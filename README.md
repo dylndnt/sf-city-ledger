@@ -1,6 +1,6 @@
 # San Francisco's money in and out
 
-A small static view of San Francisco's **FY2025 recorded actual revenue and spending** (July 1, 2024 through June 30, 2025). The middle column follows the city's fund classification; it does not assert that an individual revenue dollar paid for an individual service. The source is the Controller's [Spending and Revenue dataset](https://data.sf.gov/d/bpnb-jwfb).
+A small static view of San Francisco's **FY2025 recorded actual revenue and spending** (July 1, 2024 through June 30, 2025). The opening Sankey shows revenue sources, **funds in the middle**, and spending areas; it does not assert that an individual revenue dollar paid for an individual service. One negative General Fund financing/transfer adjustment appears as a red reverse link. Exact category and individual-fund breakdowns are under **Explore details**. The source is the Controller's [Spending and Revenue dataset](https://data.sf.gov/d/bpnb-jwfb).
 
 The committed `public/data/fy2025.json` is ready to serve without a live API call. It excludes related governmental units from displayed totals, retains signed transfer adjustments, and shows the city's `data_as_of` date. The original FY2025 CSV and source documentation are in `data/`.
 
@@ -10,7 +10,7 @@ Requires Python 3.13 and Node.js 22. From the repository root:
 
 ```sh
 python -m unittest discover -s tests -v
-node --test tests/model.test.mjs
+node --test tests/model.test.mjs tests/sankey.test.mjs
 python -m http.server 8000 --directory public
 ```
 

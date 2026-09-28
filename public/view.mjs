@@ -1,4 +1,5 @@
 import { fundOrder, money, revenueOrder, selectScope, share } from './model.mjs';
+import { renderSankey } from './sankey.mjs';
 
 const safe = value => String(value).replace(/[&<>"']/g, char => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
@@ -13,7 +14,7 @@ function bars(entries, total, side) {
     </li>`).join('')}</ul>`;
 }
 
-export function render(data, group = 'All city funds', fundCode = '') {
+export function render(data, group = 'All city funds', fundCode = '', detailsOpen = false) {
   const view = selectScope(data, group, fundCode);
   const selected = data.funds.find(f => f.fundCode === fundCode && f.fundGroup === group);
   const heading = selected ? selected.fund : group;
@@ -36,21 +37,23 @@ export function render(data, group = 'All city funds', fundCode = '') {
       .sort((a, b) => a.fund.localeCompare(b.fund))
       .map(f => `<option value="${safe(f.fundCode)}" ${fundCode === f.fundCode ? 'selected' : ''}>${safe(f.fund)}${nameCounts.get(f.fund) > 1 ? ` (${safe(f.fundCode)})` : ''}</option>`).join('')}
     </select></label>`;
-  return `<header class="page-header">
-      <div class="masthead"><span class="brand-mark" aria-hidden="true">SF<span>↗</span></span><span>THE CITY LEDGER</span><span class="masthead-right">PUBLIC FINANCE / 2025</span></div>
-      <div class="hero-copy"><p class="eyebrow">A clearer view of the city's finances</p>
-      <h1>San Francisco's<br><em>money in and out.</em></h1>
-      <p class="dek">Follow recorded revenue into the city's funds, then see which service areas recorded spending. One completed fiscal year, in one view.</p></div>
-      <div class="meta-strip"><span>FY2025 ACTUALS <span class="meta-detail">JUL 2024 — JUN 2025</span></span>
-      <span>Data as of <time datetime="${safe(data.dataAsOf.slice(0, 10))}">${safe(data.dataAsOf.slice(0, 10))}</time></span>
-      <a href="${safe(data.sourceUrl)}" target="_blank" rel="noopener noreferrer">Controller's source data <span aria-hidden="true">↗</span></a></div>
-    </header>
-    <div class="selection" aria-live="polite"><div><span class="selection-label">CURRENT VIEW</span><strong>${safe(heading)}</strong><span class="selection-sub">Revenue and spending below both reflect this selection.</span></div><button type="button" data-all>All city funds <span aria-hidden="true">↗</span></button></div>
-    <div class="columns">
-      <section class="panel revenue-panel" aria-labelledby="revenue-heading"><div class="panel-top"><span class="step">01 / SOURCES</span><span class="panel-icon" aria-hidden="true">↓</span></div><h2 id="revenue-heading">Recorded revenue</h2><p class="total">${money(view.revenueTotal)}</p><p class="panel-description">Where money was recorded as coming from</p>${bars(revenue, view.revenueTotal, 'revenue')}</section>
-      <section class="panel funds-panel" aria-labelledby="funds-heading"><div class="panel-top"><span class="step">02 / ACCOUNTS</span><span class="panel-icon" aria-hidden="true">◇</span></div><h2 id="funds-heading">City funds</h2><p class="panel-description funds-intro">Funds are the accounting layer between sources and uses. Select one to see both sides.</p><div class="fund-cards">${fundOrder.map(card).join('')}</div>${options}</section>
-      <section class="panel spending-panel" aria-labelledby="spending-heading"><div class="panel-top"><span class="step">03 / USES</span><span class="panel-icon" aria-hidden="true">↑</span></div><h2 id="spending-heading">Recorded spending</h2><p class="total">${money(view.spendingTotal)}</p><p class="panel-description">Where departments recorded spending</p>${bars(spending, view.spendingTotal, 'spending')}</section>
-    </div>
-    <aside class="how-to-read"><span class="note-icon" aria-hidden="true">i</span><div><h2>How to read this</h2><p>These are accounting actuals, not a cash ledger. Revenue and spending are recorded separately within each fund, so their annual totals need not match. Transfers and work orders can appear on both sides; signed adjustments reduce double counting. These records do not trace a specific tax dollar to a specific service. Amounts are nominal US dollars.</p></div></aside>
+  const city = selectScope(data);
+  return `<div class="masthead"><span class="brand-mark" aria-hidden="true">SF<span>↗</span></span><span>THE CITY LEDGER</span><span class="masthead-right">SAN FRANCISCO / PUBLIC FINANCE</span></div>
+    <header class="page-header"><div class="intro"><p class="eyebrow">FY2025 ACTUALS · JUL 2024 — JUN 2025</p>
+      <h1>Where the city's money<br><em>comes from and goes.</em></h1>
+      <p class="dek">Revenue sources → <strong>city funds</strong> → spending areas</p></div>
+      <div class="source-meta"><span>Data as of <time datetime="${safe(data.dataAsOf.slice(0, 10))}">${safe(data.dataAsOf.slice(0, 10))}</time></span>
+      <a href="${safe(data.sourceUrl)}" target="_blank" rel="noopener noreferrer">Controller's source data ↗</a></div></header>
+    <div class="overview-totals"><div><span>RECORDED REVENUE</span><strong>${money(city.revenueTotal)}</strong></div><span class="total-separator" aria-hidden="true">→</span><div><span>RECORDED SPENDING</span><strong>${money(city.spendingTotal)}</strong></div></div>
+    ${renderSankey(data)}
+    <p class="scope-note">These are accounting actuals, not a cash ledger. Funds sit between the two views; the ribbons do not trace particular tax dollars to particular services.</p>
+    <details class="details" id="details-panel" ${detailsOpen ? 'open' : ''}><summary>Explore details <span>See categories and individual funds</span></summary><div class="details-body">
+      <div class="selection" aria-live="polite"><div><span class="selection-label">CURRENT VIEW</span><strong>${safe(heading)}</strong><span class="selection-sub">Both detailed sides reflect this selection.</span></div><button type="button" data-all>All city funds <span aria-hidden="true">↗</span></button></div>
+      <div class="columns">
+        <section class="panel revenue-panel" aria-labelledby="revenue-heading"><div class="panel-top"><span class="step">01 / SOURCES</span><span class="panel-icon" aria-hidden="true">↓</span></div><h2 id="revenue-heading">Recorded revenue</h2><p class="total">${money(view.revenueTotal)}</p>${bars(revenue, view.revenueTotal, 'revenue')}</section>
+        <section class="panel funds-panel" aria-labelledby="funds-heading"><div class="panel-top"><span class="step">02 / ACCOUNTS</span><span class="panel-icon" aria-hidden="true">◇</span></div><h2 id="funds-heading">City funds</h2><div class="fund-cards">${fundOrder.map(card).join('')}</div>${options}</section>
+        <section class="panel spending-panel" aria-labelledby="spending-heading"><div class="panel-top"><span class="step">03 / USES</span><span class="panel-icon" aria-hidden="true">↑</span></div><h2 id="spending-heading">Recorded spending</h2><p class="total">${money(view.spendingTotal)}</p>${bars(spending, view.spendingTotal, 'spending')}</section>
+      </div><aside class="how-to-read"><span class="note-icon" aria-hidden="true">i</span><div><h2>How to read this</h2><p>Revenue and spending are recorded separately within each fund, so their annual totals need not match. Transfers and work orders can appear on both sides; signed adjustments reduce double counting. Amounts are nominal US dollars.</p></div></aside>
+    </div></details>
     <footer><span>THE CITY LEDGER <span aria-hidden="true">/</span> SAN FRANCISCO</span><a href="${safe(data.sourceUrl)}">View the underlying dataset ↗</a></footer>`;
 }

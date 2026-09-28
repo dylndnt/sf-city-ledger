@@ -2,7 +2,10 @@ import { render } from './view.mjs';
 
 const root = document.getElementById('app');
 let group = 'All city funds', fundCode = '', data;
-const draw = () => { root.innerHTML = render(data, group, fundCode); };
+const draw = () => {
+  const detailsOpen = root.querySelector('#details-panel')?.open ?? false;
+  root.innerHTML = render(data, group, fundCode, detailsOpen);
+};
 
 root.addEventListener('click', event => {
   if (event.target.closest('[data-all]')) {

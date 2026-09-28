@@ -45,3 +45,14 @@ test('source labels are escaped before insertion into the page', () => {
   assert.doesNotMatch(html, /<img/);
   assert.match(html, /&lt;img/);
 });
+
+test('citywide Sankey is the first view and detailed bars start collapsed', () => {
+  const html = render(data);
+  assert.ok(html.indexOf('class="sankey-figure"') > 0);
+  assert.ok(html.indexOf('class="sankey-figure"') < html.indexOf('<details'));
+  assert.match(html, /<summary>Explore details/);
+  assert.doesNotMatch(html, /<details[^>]*open/);
+  assert.match(html, /\$170/);
+  assert.match(html, /\$120/);
+  assert.match(html, /Data as of/);
+});
