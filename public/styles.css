@@ -87,13 +87,21 @@ main{max-width:1500px;padding:0 28px 30px}
 .sankey-scroll svg{width:100%;height:auto;display:block}
 .sankey-column-head{font-family:'DM Sans',Arial,sans-serif;fill:#6e837a;font-size:14px;font-weight:700;letter-spacing:2px}
 .sankey-ribbon{opacity:.42;stroke:none;transition:opacity .15s}
-.sankey-ribbon:hover{opacity:.78}
+.sankey-ribbon:hover,.sankey-ribbon:focus-visible{opacity:.82}
+.sankey-ribbon:focus-visible{outline:none;stroke:#173e43;stroke-width:2}
+.sankey-ribbon,.sankey-reverse{cursor:crosshair}
 .sankey-label{font-family:'DM Sans',Arial,sans-serif;fill:#274147;font-size:15px;font-weight:700}
 .sankey-amount{fill:#7a8b83;font-size:13px;font-weight:600}
 .sankey-fund-name{font-family:'DM Sans',Arial,sans-serif;fill:#fffefa;font-size:16px;font-weight:700}
 .sankey-fund-value{font-family:'DM Sans',Arial,sans-serif;fill:#d3e5dc;font-size:12px;font-weight:600}
 .sankey-reverse{fill:none;stroke:#bd664c;stroke-width:5;stroke-dasharray:8 7;opacity:.9}
+.sankey-reverse:hover,.sankey-reverse:focus-visible{stroke-width:7;opacity:1}
+.sankey-reverse:focus-visible{outline:none}
 .sankey-reverse-label{font-family:'DM Sans',Arial,sans-serif;fill:#a34f3a;font-size:14px;font-weight:700;paint-order:stroke;stroke:#fffefa;stroke-width:7px;stroke-linejoin:round}
+.flow-tooltip{position:fixed;z-index:10;max-width:min(290px,calc(100vw - 24px));pointer-events:none;background:#153238;color:#fffefa;border:1px solid #31565b;border-radius:3px;box-shadow:0 5px 18px #15323835;padding:9px 12px;line-height:1.35}
+.flow-tooltip[hidden]{display:none}
+.flow-tooltip strong{display:block;font-size:16px;font-variant-numeric:tabular-nums}
+.flow-tooltip span{display:block;margin-top:2px;font-size:11px;color:#d3e5dc}
 .sankey-figure figcaption{border-top:1px solid #e3e9e2;padding-top:10px;color:#627870;font-size:12px;line-height:1.45}
 .scope-note{max-width:920px;margin:13px 0 31px;font-size:13px;line-height:1.5;color:#526b64}
 .details{border-top:1px solid #ccd7cd;border-bottom:1px solid #ccd7cd;margin-bottom:35px}

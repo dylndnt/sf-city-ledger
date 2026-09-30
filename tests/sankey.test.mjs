@@ -51,14 +51,32 @@ test('layout still fits when one spending area dominates', () => {
   assert.ok(Math.max(...layout.uses.map(node => node.y + node.height)) <= 580);
 });
 
+test('every flow exposes an exact amount for hover and keyboard focus', () => {
+  const html = renderSankey(fixture);
+  const paths = [...html.matchAll(/<path[^>]*class="sankey-(?:ribbon|reverse)"[^>]*>/g)]
+    .map(match => match[0]);
+  assert.equal(paths.length, 5);
+  for (const path of paths) {
+    assert.match(path, /data-flow=/);
+    assert.match(path, /data-amount=/);
+    assert.match(path, /data-route=/);
+    assert.match(path, /tabindex="0"/);
+  }
+  assert.match(html, /data-amount="\$100\.00"/);
+  assert.match(html, /data-amount="−\$20\.00"/);
+  assert.match(html, /class="flow-tooltip"[^>]*hidden/);
+});
+
 test('real FY2025 snapshot renders all nodes and one visible reverse adjustment', () => {
   const data = JSON.parse(readFileSync(new URL('../public/data/fy2025.json', import.meta.url)));
   const graph = buildSankey(data);
   assert.equal(graph.sources.length, 5);
   assert.equal(graph.funds.length, 4);
   assert.equal(graph.uses.length, 7);
-  assert.equal(graph.totals.revenue, 1883018413121);
-  assert.equal(graph.totals.spending, 1817649373033);
+  const sumFundValues = key => data.funds.reduce((total, fund) =>
+    total + Object.values(fund[key]).reduce((sum, cents) => sum + cents, 0), 0);
+  assert.equal(graph.totals.revenue, sumFundValues('revenueGroups'));
+  assert.equal(graph.totals.spending, sumFundValues('spendingGroups'));
   assert.equal(graph.reverseLinks.length, 1);
   assert.equal(graph.revenueLinks.reduce((n, link) => n + link.cents, 0)
     + graph.reverseLinks.filter(link => link.side === 'revenue').reduce((n, link) => n + link.cents, 0),

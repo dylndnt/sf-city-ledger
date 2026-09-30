@@ -2,10 +2,39 @@ import { render } from './view.mjs';
 
 const root = document.getElementById('app');
 let group = 'All city funds', fundCode = '', data;
+const hideFlowTooltip = () => {
+  const tooltip = root.querySelector('.flow-tooltip');
+  if (tooltip) tooltip.hidden = true;
+};
+const showFlowTooltip = (flow, event) => {
+  const tooltip = root.querySelector('.flow-tooltip');
+  if (!tooltip || !flow) return;
+  tooltip.querySelector('[data-tooltip-amount]').textContent = flow.dataset.amount;
+  tooltip.querySelector('[data-tooltip-route]').textContent = flow.dataset.route;
+  tooltip.hidden = false;
+  const rect = flow.getBoundingClientRect();
+  const x = event.clientX ?? rect.left + rect.width / 2;
+  const y = event.clientY ?? rect.top + rect.height / 2;
+  tooltip.style.left = `${Math.max(12, Math.min(x + 16, window.innerWidth - tooltip.offsetWidth - 12))}px`;
+  tooltip.style.top = `${Math.max(12, Math.min(y + 16, window.innerHeight - tooltip.offsetHeight - 12))}px`;
+};
 const draw = () => {
+  hideFlowTooltip();
   const detailsOpen = root.querySelector('#details-panel')?.open ?? false;
   root.innerHTML = render(data, group, fundCode, detailsOpen);
 };
+
+root.addEventListener('pointerover', event => showFlowTooltip(event.target.closest?.('[data-flow]'), event));
+root.addEventListener('pointermove', event => showFlowTooltip(event.target.closest?.('[data-flow]'), event));
+root.addEventListener('pointerout', event => {
+  const flow = event.target.closest?.('[data-flow]');
+  if (flow && !flow.contains(event.relatedTarget)) hideFlowTooltip();
+});
+root.addEventListener('focusin', event => showFlowTooltip(event.target.closest?.('[data-flow]'), event));
+root.addEventListener('focusout', event => {
+  if (event.target.closest?.('[data-flow]')) hideFlowTooltip();
+});
+root.addEventListener('scroll', hideFlowTooltip, true);
 
 root.addEventListener('click', event => {
   if (event.target.closest('[data-all]')) {

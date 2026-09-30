@@ -176,14 +176,14 @@ export function renderSankey(data) {
   const fundColors = ['#b56c55', '#398278', '#698d9a', '#aa9464'];
   const revenuePaths = layout.revenueLinks.map(link => {
     const color = sourceColors[graph.sources.findIndex(node => node.id === link.source) % sourceColors.length];
-    return `<path class="sankey-ribbon" d="${ribbon(link)}" fill="${color}" data-cents="${link.cents}">
-      <title>${escapeHtml(link.source)} → ${escapeHtml(link.target)}: ${exactMoney(link.cents)}</title></path>`;
+    const route = `${link.source} → ${link.target}`;
+    return `<path class="sankey-ribbon" d="${ribbon(link)}" fill="${color}" data-flow="true" data-amount="${escapeHtml(exactMoney(link.cents))}" data-route="${escapeHtml(route)}" tabindex="0" aria-label="${escapeHtml(`${route}: ${exactMoney(link.cents)}`)}"/>`;
   }).join('');
   const spendingPaths = layout.spendingLinks.map(link => {
     const color = fundColors[graph.funds.findIndex(node => node.id === link.source) % fundColors.length];
     const use = graph.uses.find(node => node.id === link.target);
-    return `<path class="sankey-ribbon" d="${ribbon(link)}" fill="${color}" data-cents="${link.cents}">
-      <title>${escapeHtml(link.source)} → ${escapeHtml(use.label)}: ${exactMoney(link.cents)}</title></path>`;
+    const route = `${link.source} → ${use.label}`;
+    return `<path class="sankey-ribbon" d="${ribbon(link)}" fill="${color}" data-flow="true" data-amount="${escapeHtml(exactMoney(link.cents))}" data-route="${escapeHtml(route)}" tabindex="0" aria-label="${escapeHtml(`${route}: ${exactMoney(link.cents)}`)}"/>`;
   }).join('');
   const sourceNodes = layout.sources.map((node, index) => `<g data-node="source">
     <rect x="${node.x}" y="${node.portY}" width="10" height="${Math.max(1, node.flowHeight)}" rx="2" fill="${sourceColors[index % sourceColors.length]}"/>
@@ -207,8 +207,8 @@ export function renderSankey(data) {
     const lane = 615 + index * 28;
     const path = `M ${fromX} ${from.y + from.height} Q ${fromX - 10} ${lane} ${fromX - 55} ${lane} L ${toX + 55} ${lane} Q ${toX} ${lane} ${toX} ${to.y + to.height}`;
     const amount = `−${money(Math.abs(link.cents))}`;
-    return `<g data-reverse="true"><path d="${path}" class="sankey-reverse" marker-end="url(#reverse-arrow)">
-      <title>${escapeHtml(link.source)} → ${escapeHtml(link.target)}: ${exactMoney(link.cents)} reverse adjustment</title></path>
+    const route = `${link.source} → ${link.target} · reverse adjustment`;
+    return `<g data-reverse="true"><path d="${path}" class="sankey-reverse" marker-end="url(#reverse-arrow)" data-flow="true" data-amount="${escapeHtml(`−${exactMoney(Math.abs(link.cents))}`)}" data-route="${escapeHtml(route)}" tabindex="0" aria-label="${escapeHtml(`${route}: ${exactMoney(link.cents)}`)}"/>
       <text x="350" y="${lane - 8}" text-anchor="middle" class="sankey-reverse-label">${escapeHtml(amount)} reverse adjustment</text></g>`;
   }).join('');
   const height = Math.max(670, 645 + layout.reverseLinks.length * 28);
@@ -223,6 +223,6 @@ export function renderSankey(data) {
       <g class="sankey-links">${revenuePaths}${spendingPaths}</g>
       <g class="sankey-nodes">${sourceNodes}${fundNodes}${useNodes}</g>
       ${reverse}
-    </svg></div>
-    <figcaption>Positive ribbon width shows the recorded amount. The red reverse link is a negative adjustment. Revenue into funds and spending out of funds are separate accounting views. On narrow screens, scroll to see the whole diagram.</figcaption></figure>`;
+    </svg></div><div class="flow-tooltip" aria-hidden="true" hidden><strong data-tooltip-amount></strong><span data-tooltip-route></span></div>
+    <figcaption>Hover over or focus a ribbon for its exact amount. Ribbon width shows the recorded amount; the red reverse link is a negative adjustment. Revenue into funds and spending out of funds are separate accounting views. On narrow screens, scroll to see the whole diagram.</figcaption></figure>`;
 }
