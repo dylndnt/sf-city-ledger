@@ -38,6 +38,14 @@ Proposed pipeline:
 
 The API is public; Socrata says an application token raises request limits. A weekly server-side job can use a token if needed, keeping it out of browser code.
 
+## Spending detail, vendor payments, and outcomes
+
+The static FY2025 JSON includes `spendingDetails`, grouped by fund, organization group, department, program, character, object, and sub-object. Its signed amount sum reconciles to the spending total in the same source snapshot. The deeper path can identify the city department and program but cannot name an outside payee by itself.
+
+Named payees come from the Controller's separate [Vendor Payments (Vouchers)](https://data.sf.gov/d/n9pm-xkyq) dataset. The site requests paid vouchers for the exact selected codes. The source excludes some sensitive payment categories and covers only vendor-related spending; its paid-voucher figures are not a partition of the Spending and Revenue total. Individual vendor records can have different `data_as_of` values. The site pages results rather than silently truncating them.
+
+The [Scorecard Measures](https://data.sf.gov/d/kc49-udxn) dataset supplies observed department performance measures. The site uses explicit department-code mappings and the latest observation dated within FY2025, excluding the source's `-9999` missing-value marker. Some measures follow calendar-year or other reporting methods; the observation date does not turn them into FY2025 causal outcomes. No program-level or vendor-level causal link is asserted.
+
 ## Fund layer and Sankey limitation
 
 The city's [budget book](https://media.api.sf.gov/documents/70_CSF_Proposed_Budget_Book_June_2024_Final_REV1_0525v2_UMl4gFg.pdf) explains that public financial activity is planned and recorded in funds reflecting restrictions on use. The [OpenBook glossary](https://openbook-report.sfgov.org/ccsf_content/SpendingRevenueHelp/glossary.html) defines Fund Type, Fund, and Fund Category as a hierarchy. The raw actuals include all three fields, so both sides can be grouped by fund type or individual fund.

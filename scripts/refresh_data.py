@@ -28,8 +28,8 @@ def get(url: str) -> bytes:
 
 def refresh(fiscal_year: str, output: Path, archive: Path) -> bool:
     query = urlencode({"$where": f"fiscal_year='{fiscal_year}'", "$limit": "50000"})
-    raw = get(f"https://data.sfgov.org/resource/bpnb-jwfb.csv?{query}")
-    metadata = get("https://data.sfgov.org/api/views/bpnb-jwfb.json")
+    raw = get(f"https://data.sf.gov/resource/bpnb-jwfb.csv?{query}")
+    metadata = get("https://data.sf.gov/api/views/bpnb-jwfb.json")
     fetched_at = datetime.now(timezone.utc)
     stamp = fetched_at.strftime("%Y%m%dT%H%M%SZ")
     archive.mkdir(parents=True, exist_ok=True)

@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { selectScope } from '../public/model.mjs';
 import { render } from '../public/view.mjs';
 
@@ -55,4 +56,12 @@ test('citywide Sankey is the first view and detailed bars start collapsed', () =
   assert.match(html, /\$170/);
   assert.match(html, /\$120/);
   assert.match(html, /Data as of/);
+});
+
+test('spending areas open the drilldown from the existing details panel', () => {
+  const snapshot = JSON.parse(readFileSync(new URL('../public/data/fy2025.json', import.meta.url)));
+  const html = render(snapshot, 'All city funds', '', true, { path: [] });
+  assert.match(html, /data-spending-root="02"/);
+  assert.match(html, /id="spending-drilldown"/);
+  assert.match(html, /Choose a spending area above/);
 });

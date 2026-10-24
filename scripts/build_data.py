@@ -16,8 +16,22 @@ ROW_LIMIT = 50_000
 REQUIRED = {
     "fiscal_year", "related_govt_units", "revenue_or_spending", "character_code",
     "organization_group_code", "organization_group", "fund_type_code", "fund_type",
-    "fund_code", "fund", "amount", "data_as_of",
+    "fund_code", "fund", "amount", "data_as_of", "department_code", "department",
+    "program_code", "program", "character", "object_code", "object",
+    "sub_object_code", "sub_object",
 }
+SPENDING_FIELDS = (
+    "fund_code", "organization_group_code", "organization_group",
+    "department_code", "department", "program_code", "program",
+    "character_code", "character", "object_code", "object",
+    "sub_object_code", "sub_object",
+)
+SPENDING_KEYS = (
+    "fundCode", "organizationGroupCode", "organizationGroup",
+    "departmentCode", "department", "programCode", "program",
+    "characterCode", "character", "objectCode", "object",
+    "subObjectCode", "subObject",
+)
 REVENUE_CODES = {
     "PROP_TAX": "Taxes", "BUS_TAX": "Taxes", "OTHER_LOC_TAX": "Taxes",
     "CHGS_FOR_SERVICES": "Charges for services",
@@ -58,6 +72,7 @@ def build_snapshot(raw: bytes, fiscal_year: str, processed_at: str) -> dict:
         raise ValueError(f"missing columns: {sorted(REQUIRED - set(reader.fieldnames or []))}")
     funds = {}
     org_labels = {}
+    spending_details = defaultdict(int)
     timestamps = set()
     count = 0
     raw_totals = {"Revenue": 0, "Spending": 0}
@@ -101,6 +116,7 @@ def build_snapshot(raw: bytes, fiscal_year: str, processed_at: str) -> dict:
                 raise ValueError(f"conflicting organization group label: {code}")
             org_labels[code] = label
             fund["spendingGroups"][code] += amount
+            spending_details[tuple(row[field] for field in SPENDING_FIELDS)] += amount
         else:
             raise ValueError(f"unknown revenue_or_spending: {side}")
     if count == 0 or not funds:
@@ -113,12 +129,18 @@ def build_snapshot(raw: bytes, fiscal_year: str, processed_at: str) -> dict:
     }
     if grouped_totals != raw_totals:
         raise ValueError("grouped totals do not reconcile")
+    if sum(spending_details.values()) != raw_totals["Spending"]:
+        raise ValueError("spending details do not reconcile")
     return {
         "fiscalYear": fiscal_year, "dataAsOf": next(iter(timestamps)),
         "processedAt": processed_at, "sourceUrl": SOURCE_URL,
         "sourceSha256": hashlib.sha256(raw).hexdigest(),
         "sourceRows": count,
         "organizationGroups": dict(sorted(org_labels.items())),
+        "spendingDetails": [
+            dict(zip(SPENDING_KEYS, key), amount=amount)
+            for key, amount in sorted(spending_details.items())
+        ],
         "funds": [funds[key] for key in sorted(funds)],
     }
 

@@ -12,19 +12,25 @@ FIELDS = [
     "fiscal_year", "related_govt_units", "revenue_or_spending", "character_code",
     "organization_group_code", "organization_group", "fund_type_code",
     "fund_type", "fund_code", "fund", "amount", "data_as_of",
+    "department_code", "department", "program_code", "program", "character",
+    "object_code", "object", "sub_object_code", "sub_object",
 ]
 
 
 def sample_csv(character_code="PROP_TAX", as_of="2026-09-20T23:05:20.000"):
     rows = [
         ["2025", "NO", "Revenue", character_code, "01", "Public Protection",
-         "GEN_FUND", "General Fund", "GF~1", "General Fund", "100.00", as_of],
+         "GEN_FUND", "General Fund", "GF~1", "General Fund", "100.00", as_of,
+         "ADP", "Adult Probation", "OPR", "Operating", "Taxes", "TAX", "Tax", "1", "Tax"],
         ["2025", "NO", "Revenue", "ELS", "01", "Public Protection",
-         "GEN_FUND", "General Fund", "GF~1", "General Fund", "-20.00", as_of],
+         "GEN_FUND", "General Fund", "GF~1", "General Fund", "-20.00", as_of,
+         "ADP", "Adult Probation", "OPR", "Operating", "Transfer", "TFR", "Transfer", "2", "Transfer"],
         ["2025", "NO", "Spending", "SALARIES", "01", "Public Protection",
-         "GEN_FUND", "General Fund", "GF~1", "General Fund", "50.00", as_of],
+         "GEN_FUND", "General Fund", "GF~1", "General Fund", "50.00", as_of,
+         "ADP", "Adult Probation", "OPR", "Operating", "Salaries", "SAL", "Salaries", "3", "Regular"],
         ["2025", "YES", "Revenue", "PROP_TAX", "01", "Public Protection",
-         "GEN_FUND", "General Fund", "GF~1", "General Fund", "70.00", as_of],
+         "GEN_FUND", "General Fund", "GF~1", "General Fund", "70.00", as_of,
+         "ADP", "Adult Probation", "OPR", "Operating", "Taxes", "TAX", "Tax", "1", "Tax"],
     ]
     out = io.StringIO()
     writer = csv.writer(out)
@@ -48,6 +54,17 @@ class BuildDataTests(unittest.TestCase):
     def test_unknown_revenue_code_stops_publication(self):
         with self.assertRaisesRegex(ValueError, "unknown revenue character"):
             build_snapshot(sample_csv("UNEXPECTED"), "2025", "2026-09-27T00:00:00Z")
+
+    def test_spending_details_reconcile_and_keep_department_path(self):
+        data = build_snapshot(sample_csv(), "2025", "2026-09-27T00:00:00Z")
+        self.assertEqual(data["spendingDetails"], [{
+            "fundCode": "GF~1", "organizationGroupCode": "01",
+            "organizationGroup": "Public Protection", "departmentCode": "ADP",
+            "department": "Adult Probation", "programCode": "OPR",
+            "program": "Operating", "characterCode": "SALARIES",
+            "character": "Salaries", "objectCode": "SAL", "object": "Salaries",
+            "subObjectCode": "3", "subObject": "Regular", "amount": 5000,
+        }])
 
     def test_missing_columns_and_mixed_dates_stop_publication(self):
         with self.assertRaisesRegex(ValueError, "missing columns"):

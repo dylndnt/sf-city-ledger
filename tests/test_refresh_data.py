@@ -21,9 +21,11 @@ class RefreshTests(unittest.TestCase):
         raw = (
             b"fiscal_year,related_govt_units,revenue_or_spending,character_code,"
             b"organization_group_code,organization_group,fund_type_code,fund_type,"
-            b"fund_code,fund,amount,data_as_of\n"
+            b"fund_code,fund,amount,data_as_of,department_code,department,"
+            b"program_code,program,character,object_code,object,sub_object_code,sub_object\n"
             b"2025,NO,Revenue,PROP_TAX,01,Public Protection,GEN_FUND,"
-            b"General Fund,GF~1,General Fund,100.00,2026-09-20T23:05:20.000\n"
+            b"General Fund,GF~1,General Fund,100.00,2026-09-20T23:05:20.000,"
+            b"ADP,Adult Probation,OPR,Operating,Taxes,TAX,Tax,1,Tax\n"
         )
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "fy2025.json"

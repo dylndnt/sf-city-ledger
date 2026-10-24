@@ -4,13 +4,21 @@ A small static view of San Francisco's **FY2025 recorded actual revenue and spen
 
 The committed `public/data/fy2025.json` is ready to serve without a live API call. It excludes related governmental units from displayed totals, retains signed transfer adjustments, and shows the city's `data_as_of` date. The original FY2025 CSV and source documentation are in `data/`.
 
+## Follow spending to departments, payees, and results
+
+Open **Explore details** and select a spending area. The drilldown follows the Controller's FY2025 accounting classifications: organization group → department → program → spending character → object → sub-object. Every level keeps the selected city fund scope and shows signed recorded spending. A breadcrumb lets you move back up the path.
+
+At a sub-object, the page queries the Controller's [Vendor Payments (Vouchers)](https://data.sf.gov/d/n9pm-xkyq) dataset for matching paid vouchers and shows named payees, 50 at a time. Select a payee to see individual public voucher, purchase order, and contract details. Vendor payments are a **subset of spending** from a different report and accounting basis. They may not sum to the accounting actuals shown above them; a missing public voucher does not imply missing spending. DataSF currently serves this lookup live, so vendor results require network access and may have source dates different from the committed FY2025 snapshot.
+
+For departments with an explicit match, the page also shows observed values from the city's [Scorecard Measures](https://data.sf.gov/d/kc49-udxn) dataset. It uses the latest observation dated within FY2025 for each measure and provides the definition and method. The reporting period can differ by measure, so the page does not compare values to published targets without checking their periods. These are **related department outcomes**, not evidence that a particular program or vendor payment caused them. Departments without published matching measures are labeled as such.
+
 ## Local preview
 
 Requires Python 3.13 and Node.js 22. From the repository root:
 
 ```sh
 python -m unittest discover -s tests -v
-node --test tests/model.test.mjs tests/sankey.test.mjs
+node --test tests/*.test.mjs
 python -m http.server 8000 --directory public
 ```
 
