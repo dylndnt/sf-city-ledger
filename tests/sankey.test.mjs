@@ -85,7 +85,7 @@ test('real FY2025 snapshot renders all nodes and one visible reverse adjustment'
     + graph.reverseLinks.filter(link => link.side === 'spending').reduce((n, link) => n + link.cents, 0),
   graph.totals.spending);
   const html = renderSankey(data);
-  assert.match(html, /<svg[^>]*role="img"/);
+  assert.match(html, /<svg[^>]*role="group"/);
   assert.match(html, /<title[^>]*>FY2025 fund Sankey/);
   assert.match(html, /data-reverse="true"/);
   assert.match(html, /−\$1\.05B/);
