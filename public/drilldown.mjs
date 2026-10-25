@@ -1,10 +1,10 @@
 export const spendingLevels = [
-  { name: 'Spending area', code: 'organizationGroupCode', label: 'organizationGroup' },
-  { name: 'Department', code: 'departmentCode', label: 'department' },
-  { name: 'Program', code: 'programCode', label: 'program' },
-  { name: 'Spending type', code: 'characterCode', label: 'character' },
-  { name: 'Object', code: 'objectCode', label: 'object' },
-  { name: 'Sub-object', code: 'subObjectCode', label: 'subObject' },
+  { name: 'Spending area', code: 'organizationGroupCode', label: 'organizationGroup', description: 'Citywide grouping of departments.' },
+  { name: 'Department', code: 'departmentCode', label: 'department', description: 'Agency that recorded the spending.' },
+  { name: 'Program', code: 'programCode', label: 'program', description: 'Activity recorded within the department.' },
+  { name: 'Spending type', code: 'characterCode', label: 'character', description: 'Broad kind of cost, such as salaries or services.' },
+  { name: 'Object', code: 'objectCode', label: 'object', description: 'A more specific accounting cost category.' },
+  { name: 'Sub-object', code: 'subObjectCode', label: 'subObject', description: 'The most detailed spending classification here.' },
 ];
 
 const scorecardDepartments = {

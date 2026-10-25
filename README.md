@@ -1,6 +1,6 @@
 # The City Ledger
 
-An interactive view of San Francisco's FY2025 recorded revenue and spending. The opening chart shows revenue sources, fund groups, and spending areas. Select a spending area or its ribbon to zoom into departments, programs, spending types, objects, and sub-objects within the same chart frame. The path buttons return to earlier levels.
+An interactive view of San Francisco's FY2025 recorded revenue and spending. The opening chart shows revenue sources, fund groups, and spending areas. Select a spending area or its ribbon to open a branching view of departments, programs, spending types, objects, and sub-objects. Each step keeps the selected category visible beside muted, clickable siblings and the next choices. The path buttons return to earlier levels. Short descriptions explain each classification level; compact disclosure controls explain limits of related outcome and vendor data.
 
 The accounting charts use committed, validated [FY2025 and FY2024 Spending and Revenue snapshots](https://data.sf.gov/d/bpnb-jwfb). Each spending branch shows its FY2025 signed total, FY2024 total, and change for the same classification and fund scope. The two fiscal years are July 2024–June 2025 and July 2023–June 2024. Related governmental units are excluded, matching the city's default view. Revenue and spending are independent totals; ribbons do not trace specific revenue dollars to expenses.
 

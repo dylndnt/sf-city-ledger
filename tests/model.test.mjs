@@ -56,6 +56,14 @@ test('citywide Sankey is the only opening chart', () => {
   assert.match(html, /Data as of/);
 });
 
+test('accounting context is available from a compact chart disclosure', () => {
+  const html = render(data);
+  assert.match(html, /<details class="chart-help"/);
+  assert.match(html, /data-info-key="chart"/);
+  assert.match(html, /About this chart/);
+  assert.doesNotMatch(html, /class="scope-note"/);
+});
+
 test('the opening chart is the entry point and selection zooms in place', () => {
   const snapshot = JSON.parse(readFileSync(new URL('../public/data/fy2025.json', import.meta.url)));
   const opening = render(snapshot, 'All city funds', '', false, { path: [] });

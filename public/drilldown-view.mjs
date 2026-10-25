@@ -21,6 +21,30 @@ const metricChange = (current, previous, type) => {
   const formatted = new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(Math.abs(amount));
   return `${amount > 0 ? '+' : amount < 0 ? '−' : ''}${formatted}${type === 'Percent' ? ' pp' : ''}`;
 };
+const infoTip = (label, content) => `<details class="info-tip" data-info-key="${safe(label)}"><summary aria-label="About ${safe(label)}">i</summary><div>${safe(content)}</div></details>`;
+const priorLine = (item, fiscalYear) => item.previous === null ? 'Prior year unavailable' :
+  `FY${safe(Number(fiscalYear) - 1)} ${money(item.previous)} · ${item.change >= 0 ? '+' : ''}${money(item.change)} change`;
+
+function branchColumn(data, previousData, group, fundCode, path, depth, animate = false) {
+  const prefix = path.slice(0, depth);
+  const branch = compareSpending(data, previousData, group, fundCode, prefix);
+  const level = spendingLevels[depth];
+  const selectedCode = path[depth];
+  const ancestor = depth < path.length;
+  const entries = ancestor
+    ? [...branch.entries].sort((a, b) => (b.code === selectedCode) - (a.code === selectedCode))
+    : branch.entries;
+  const maxAmount = Math.max(1, ...entries.map(item => Math.abs(item.amount)));
+  const rows = entries.map(item => {
+    const current = item.code === selectedCode;
+    const className = ancestor ? `branch-item ${current ? 'is-selected' : 'is-muted'}` : 'branch-item is-next';
+    const action = ancestor
+      ? `data-branch-depth="${depth}" data-branch-code="${safe(item.code)}" data-focus-key="${depth}:${safe(item.code)}"${current ? ' aria-current="step"' : ''}`
+      : `data-next-code="${safe(item.code)}"`;
+    return `<li><button type="button" class="${className}" ${action}><span class="branch-bar" style="--flow-width:${Math.max(2, 100 * Math.abs(item.amount) / maxAmount)}%"></span><span class="branch-row"><span class="branch-name">${safe(item.label)}<small>${safe(item.code)}</small></span><strong>${money(item.amount)}<small>${share(item.amount, branch.total)}</small></strong><span class="branch-arrow" aria-hidden="true">${current ? '●' : '↗'}</span></span><span class="branch-compare">${priorLine(item, data.fiscalYear)}</span></button></li>`;
+  }).join('');
+  return `<section class="branch-column ${ancestor ? 'is-ancestor' : `is-entering${animate ? ' is-animated' : ''}`}" data-branch-level="${depth}" aria-label="${safe(level.name)}"><header class="branch-column-head"><span>${safe(level.name)}</span><p>${safe(level.description)}</p></header><ul>${rows}</ul></section>`;
+}
 
 function vendorSection(state) {
   const status = state.vendorStatus || 'idle';
@@ -47,8 +71,7 @@ function vendorSection(state) {
     }
     selected = `<div class="vendor-detail"><h4>${safe(state.selectedVendor)}</h4><p>Individual public payment records for this payee and spending path.</p>${comparison}${vouchers}</div>`;
   }
-  return `<section class="related-card" aria-labelledby="vendor-heading"><h3 id="vendor-heading">Paid vendor vouchers</h3>
-    <p>Named payees are a subset of spending. These payments have their own accounting basis and may not equal the recorded spending above.</p>
+  return `<section class="related-card vendor-section" aria-labelledby="vendor-heading"><div class="related-heading"><h3 id="vendor-heading">Paid vendor vouchers</h3>${infoTip('paid vendor vouchers', 'Named payees are a subset of spending. These payments have their own accounting basis and may not equal the recorded spending above.')}</div>
     ${content}${selected}<a href="https://data.sf.gov/d/n9pm-xkyq" target="_blank" rel="noopener noreferrer">Vendor payment source ↗</a></section>`;
 }
 
@@ -67,8 +90,7 @@ function outcomeSection(state, fiscalYear, departmentCode) {
         ${row.measure_description || row.measure_methodology ? `<details class="measure-method"><summary>Definition and method</summary>${row.measure_description ? `<p>${safe(row.measure_description)}</p>` : ''}${row.measure_methodology ? `<p>${safe(row.measure_methodology)}</p>` : ''}</details>` : ''}
       </li>`).join('')}</ul>`
     : `<p>No measures with an observation date in FY${safe(fiscalYear)} are published for this department.</p>`;
-  return `<section class="related-card" aria-labelledby="outcome-heading"><h3 id="outcome-heading">Related department outcomes</h3>
-    <p>These measures describe the department, not the effect of this particular program, sub-object, or vendor payment. Reporting periods vary; check each measure's definition.</p>
+  return `<section class="related-card" aria-labelledby="outcome-heading"><div class="related-heading"><h3 id="outcome-heading">Related department outcomes</h3>${infoTip('related department outcomes', "These measures describe the department, not the effect of this particular program, sub-object, or vendor payment. Reporting periods vary; check each measure's definition.")}</div>
     ${content}<a href="https://data.sf.gov/d/kc49-udxn" target="_blank" rel="noopener noreferrer">Scorecard source ↗</a></section>`;
 }
 
@@ -76,13 +98,13 @@ export function renderDrilldown(data, group, fundCode, state = {}, previousData 
   const path = state.path || [];
   const selected = compareSpending(data, previousData, group, fundCode, path);
   const crumb = `<nav class="drill-breadcrumb" aria-label="Spending path"><button type="button" data-depth="-1">All spending</button>${selected.breadcrumbs.map((part, index) => `<span aria-hidden="true">›</span><button type="button" data-depth="${index}">${safe(part.label)}</button>`).join('')}</nav>`;
-  const maxAmount = Math.max(1, ...selected.entries.map(item => Math.abs(item.amount)));
-  const options = selected.level
-    ? `<div class="zoom-flow" aria-label="${safe(selected.level.name)} breakdown"><div class="zoom-parent"><span>CURRENT CATEGORY</span><strong>${safe(selected.breadcrumbs.at(-1)?.label || 'All recorded spending')}</strong><b>${money(selected.total)}</b></div><div class="zoom-children"><p class="zoom-next">${safe(selected.level.name)} <span>Click a branch to zoom in ↗</span></p><ul>${selected.entries.map(item => `<li><button type="button" data-next-code="${safe(item.code)}" aria-label="Open ${safe(item.label)}, ${money(item.amount)}"><span class="zoom-bar" style="--flow-width:${Math.max(2, 100 * Math.abs(item.amount) / maxAmount)}%"></span><span class="zoom-row"><span class="zoom-name">${safe(item.label)}<small>${safe(item.code)}</small></span><strong>${money(item.amount)}<small>${share(item.amount, selected.total)}</small></strong><span aria-hidden="true">↗</span></span><span class="zoom-compare">${item.previous === null ? 'Prior year unavailable' : `FY${safe(Number(data.fiscalYear) - 1)} ${money(item.previous)} · ${item.change >= 0 ? '+' : ''}${money(item.change)} change`}</span></button></li>`).join('')}</ul></div></div>`
-    : '<p class="drill-instruction">This is the deepest spending classification in the accounting actuals. Matching named payees and individual vouchers appear here.</p>';
+  const firstVisibleDepth = Math.max(0, path.length - 2);
+  const options = `<div class="branch-flow" aria-label="Spending classification path">${Array.from({ length: path.length - firstVisibleDepth }, (_, offset) => branchColumn(data, previousData, group, fundCode, path, firstVisibleDepth + offset)).join('')}${selected.level
+    ? branchColumn(data, previousData, group, fundCode, path, path.length, state.animate)
+    : `<section class="branch-column is-entering${state.animate ? ' is-animated' : ''} branch-payees" data-branch-level="${spendingLevels.length}" aria-label="Payees"><header class="branch-column-head"><span>Payees</span><p>Entities named on public paid vouchers.</p></header>${vendorSection(state)}</section>`}</div>`;
   const level = selected.level ? safe(selected.level.name) : 'Payees and vouchers';
   const related = path.length >= 2
-    ? `<div class="related-grid">${outcomeSection(state, data.fiscalYear, selected.departmentCode)}${path.length === spendingLevels.length ? vendorSection(state) : ''}</div>`
+    ? `<div class="related-grid">${outcomeSection(state, data.fiscalYear, selected.departmentCode)}</div>`
     : '';
   const prior = selected.previous === null ? 'Prior-year spending unavailable' :
     `FY${safe(Number(data.fiscalYear) - 1)} ${money(selected.previous)} · change ${selected.change >= 0 ? '+' : ''}${money(selected.change)}`;

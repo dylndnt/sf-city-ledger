@@ -30,11 +30,16 @@ const draw = () => {
   const focused = document.activeElement;
   const inDrilldown = root.querySelector('#spending-drilldown')?.contains(focused);
   const focusId = inDrilldown && focused.id;
-  const focusData = inDrilldown && ['vendor', 'depth', 'nextCode', 'moreVendors', 'moreVouchers',
+  const focusData = inDrilldown && ['vendor', 'depth', 'nextCode', 'focusKey', 'moreVendors', 'moreVouchers',
     'retryVendors', 'retryVouchers', 'retryOutcomes']
     .find(key => Object.hasOwn(focused.dataset, key));
   const focusValue = focusData && focused.dataset[focusData];
+  const openInfoKeys = new Set([...root.querySelectorAll('details[data-info-key][open]')]
+    .map(detail => detail.dataset.infoKey));
   root.innerHTML = render(data, group, fundCode, false, explorer, previousData);
+  for (const detail of root.querySelectorAll('details[data-info-key]')) {
+    detail.open = openInfoKeys.has(detail.dataset.infoKey);
+  }
   if (inDrilldown) {
     const replacement = (focusId && root.querySelector(`#${focusId}`))
       || (focusData && [...root.querySelectorAll(`[data-${focusData.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)}]`)]
@@ -137,15 +142,18 @@ const loadPriorVendor = async () => {
 const choosePath = path => {
   const previous = explorer;
   resetExplorer(path);
+  explorer.animate = true;
   if (path[1] && path[1] === previous.path[1] && previous.outcomeStatus === 'ready') {
     explorer.outcomes = previous.outcomes;
     explorer.outcomeStatus = 'ready';
   }
   draw();
-  root.querySelector('#spending-drilldown')?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  root.querySelector('#spending-drilldown')?.scrollIntoView({ block: 'start',
+    behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
   root.querySelector('#drill-heading')?.focus({ preventScroll: true });
   if (explorer.outcomeStatus !== 'ready') loadOutcomes();
   loadVendors();
+  explorer.animate = false;
 };
 
 root.addEventListener('pointerover', event => showFlowTooltip(event.target.closest?.('[data-flow]'), event));
@@ -176,6 +184,14 @@ root.addEventListener('click', event => {
   if (spendingRoot) { choosePath([spendingRoot.dataset.spendingRoot]); return; }
   const next = event.target.closest('[data-next-code]');
   if (next) { choosePath([...explorer.path, next.dataset.nextCode]); return; }
+  const branch = event.target.closest('[data-branch-depth]');
+  if (branch) {
+    const depth = Number(branch.dataset.branchDepth);
+    if (explorer.path[depth] !== branch.dataset.branchCode) {
+      choosePath([...explorer.path.slice(0, depth), branch.dataset.branchCode]);
+    }
+    return;
+  }
   const crumb = event.target.closest('[data-depth]');
   if (crumb) { choosePath(explorer.path.slice(0, Number(crumb.dataset.depth) + 1)); return; }
   const vendor = event.target.closest('[data-vendor]');

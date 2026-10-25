@@ -51,13 +51,13 @@ test('selected payee shows paid-voucher prior-year change', () => {
   assert.match(html, /\+\$50\.00/);
 });
 
-test('focused chart replaces parent with clickable child flows and a prior-year total', () => {
+test('focused chart keeps its parent beside clickable children and a prior-year total', () => {
   const html = renderDrilldown(data, 'All city funds', '', { path: ['02'] }, previous);
   assert.match(html, /class="zoom-chart/);
   assert.match(html, /data-next-code="DPW"/);
   assert.match(html, /FY2024/);
   assert.match(html, /data-depth="-1"/);
-  assert.match(html, /class="zoom-compare"/);
+  assert.match(html, /class="branch-compare"/);
 });
 
 test('outcome cards show prior observation and signed change', () => {
@@ -72,4 +72,45 @@ test('outcome cards show prior observation and signed change', () => {
   assert.match(html, /FY2024/);
   assert.match(html, /\+3/);
   assert.match(html, /2024-06-30/);
+});
+
+test('selected path stays visible beside muted siblings and next choices', () => {
+  const html = renderDrilldown(data, 'All city funds', '', { path: ['02', 'DPW'] }, previous);
+  assert.match(html, /data-branch-level="0"/);
+  assert.match(html, /data-branch-level="1"/);
+  assert.match(html, /data-branch-level="2"/);
+  assert.match(html, /data-branch-depth="0" data-branch-code="02"[^>]*aria-current="step"/);
+  assert.match(html, /class="branch-item is-muted"/);
+  assert.match(html, /data-branch-depth="1" data-branch-code="DPW"[^>]*aria-current="step"/);
+  assert.match(html, /data-focus-key="1:DPW"/);
+  assert.match(html, /data-next-code="CAP"/);
+  assert.doesNotMatch(html, /class="branch-item[^\"]*"[^>]*aria-label=/);
+});
+
+test('each visible level explains its classification and caveats use disclosures', () => {
+  const html = renderDrilldown(data, 'All city funds', '', { path: ['02', 'DPW'] }, previous);
+  assert.match(html, /Citywide grouping of departments/);
+  assert.match(html, /Agency that recorded the spending/);
+  assert.match(html, /Activity recorded within the department/);
+  assert.match(html, /<details class="info-tip"/);
+  assert.match(html, /data-info-key="related department outcomes"/);
+  assert.doesNotMatch(html, /<p>These measures describe the department/);
+});
+
+test('leaf keeps selected classifications beside named payees', () => {
+  const path = ['02', 'DPW', 'CAP', 'NON_PERS_SVCS', 'PROF_SPEC_SVC', '527040'];
+  const html = renderDrilldown(data, 'All city funds', '', {
+    path, vendorStatus: 'ready', vendors: [{ vendor: 'ACME', paid: '120.50' }],
+  }, previous);
+  assert.match(html, /data-branch-level="4"/);
+  assert.match(html, /data-branch-level="5"/);
+  assert.match(html, /data-branch-level="6" aria-label="Payees"/);
+  assert.match(html, /data-vendor="ACME"/);
+  assert.match(html, /About paid vendor vouchers/);
+});
+
+test('column reveal is opt-in for navigation renders', () => {
+  const state = { path: ['02'] };
+  assert.doesNotMatch(renderDrilldown(data, 'All city funds', '', state, previous), /is-entering is-animated/);
+  assert.match(renderDrilldown(data, 'All city funds', '', { ...state, animate: true }, previous), /is-entering is-animated/);
 });
