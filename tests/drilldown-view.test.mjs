@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { renderDrilldown } from '../public/drilldown-view.mjs';
 
 const data = JSON.parse(readFileSync(new URL('../public/data/fy2025.json', import.meta.url)));
+const previous = JSON.parse(readFileSync(new URL('../public/data/fy2024.json', import.meta.url)));
 
 test('drilldown presents clickable next level and signed total', () => {
   const html = renderDrilldown(data, 'All city funds', '', { path: ['02'] });
@@ -38,4 +39,37 @@ test('selected payee opens individual public vouchers', () => {
   assert.match(html, /V-123/);
   assert.match(html, /Street work/);
   assert.match(html, /Source date 2025-06-30/);
+});
+
+test('selected payee shows paid-voucher prior-year change', () => {
+  const path = ['02', 'DPW', 'CAP', 'NON_PERS_SVCS', 'PROF_SPEC_SVC', '527040'];
+  const html = renderDrilldown(data, 'All city funds', '', {
+    path, selectedVendor: 'ACME', selectedVendorPaid: '150.00',
+    priorVendorStatus: 'ready', previousVendorPaid: '100.00',
+  });
+  assert.match(html, /FY2024 paid vouchers/);
+  assert.match(html, /\+\$50\.00/);
+});
+
+test('focused chart replaces parent with clickable child flows and a prior-year total', () => {
+  const html = renderDrilldown(data, 'All city funds', '', { path: ['02'] }, previous);
+  assert.match(html, /class="zoom-chart/);
+  assert.match(html, /data-next-code="DPW"/);
+  assert.match(html, /FY2024/);
+  assert.match(html, /data-depth="-1"/);
+  assert.match(html, /class="zoom-compare"/);
+});
+
+test('outcome cards show prior observation and signed change', () => {
+  const html = renderDrilldown(data, 'All city funds', '', {
+    path: ['02', 'DPW'], outcomeStatus: 'ready', outcomes: [{
+      measure_code: 'A', measure_title: 'Street repairs', actual: '15',
+      calendar_month: '2025-06-30', measure_data_type: 'Number',
+      previous: { actual: '12', calendar_month: '2024-06-30' },
+    }],
+  }, previous);
+  assert.match(html, /FY2025/);
+  assert.match(html, /FY2024/);
+  assert.match(html, /\+3/);
+  assert.match(html, /2024-06-30/);
 });

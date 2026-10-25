@@ -9,7 +9,7 @@ const exactMoney = cents => new Intl.NumberFormat('en-US', {
   style: 'currency', currency: 'USD', minimumFractionDigits: 2,
 }).format(cents / 100);
 
-export function buildSankey(data) {
+export function buildSankey(data, group = 'All city funds', fundCode = '') {
   const revenue = new Map();
   const spending = new Map();
   const fundTotals = new Map();
@@ -18,7 +18,9 @@ export function buildSankey(data) {
     spending.set(group, new Map());
     fundTotals.set(group, { revenue: 0, spending: 0 });
   }
-  for (const fund of data.funds) {
+  const selectedFunds = data.funds.filter(fund =>
+    (group === 'All city funds' || fund.fundGroup === group) && (!fundCode || fund.fundCode === fundCode));
+  for (const fund of selectedFunds) {
     if (!revenue.has(fund.fundGroup)) throw new Error(`unknown fund group: ${fund.fundGroup}`);
     const totals = fundTotals.get(fund.fundGroup);
     for (const [label, cents] of Object.entries(fund.revenueGroups)) {
@@ -32,7 +34,7 @@ export function buildSankey(data) {
   }
 
   const revenueLinks = [], spendingLinks = [], reverseLinks = [];
-  const presentFunds = fundOrder.filter(group => data.funds.some(f => f.fundGroup === group));
+  const presentFunds = fundOrder.filter(name => selectedFunds.some(f => f.fundGroup === name));
   for (const group of presentFunds) {
     for (const label of revenueOrder) {
       const cents = revenue.get(group).get(label) ?? 0;
@@ -170,8 +172,8 @@ function nodeLabel(node, x, anchor, maxLength, amount) {
     <tspan x="${x}" dy="17" class="sankey-amount">${escapeHtml(money(amount))}</tspan></text>`;
 }
 
-export function renderSankey(data) {
-  const graph = buildSankey(data), layout = layoutSankey(graph);
+export function renderSankey(data, group = 'All city funds', fundCode = '') {
+  const graph = buildSankey(data, group, fundCode), layout = layoutSankey(graph);
   const sourceColors = ['#438c86', '#6a9e9a', '#86aaa0', '#a8aea0', '#be9573'];
   const fundColors = ['#b56c55', '#398278', '#698d9a', '#aa9464'];
   const revenuePaths = layout.revenueLinks.map(link => {
@@ -183,7 +185,7 @@ export function renderSankey(data) {
     const color = fundColors[graph.funds.findIndex(node => node.id === link.source) % fundColors.length];
     const use = graph.uses.find(node => node.id === link.target);
     const route = `${link.source} → ${use.label}`;
-    return `<path class="sankey-ribbon" d="${ribbon(link)}" fill="${color}" data-flow="true" data-amount="${escapeHtml(exactMoney(link.cents))}" data-route="${escapeHtml(route)}" tabindex="0" aria-label="${escapeHtml(`${route}: ${exactMoney(link.cents)}`)}"/>`;
+    return `<path class="sankey-ribbon" d="${ribbon(link)}" fill="${color}" data-flow="true" data-spending-root="${escapeHtml(link.target)}" data-amount="${escapeHtml(exactMoney(link.cents))}" data-route="${escapeHtml(route)}" tabindex="0" role="button" aria-label="${escapeHtml(`Open ${use.label}: ${exactMoney(link.cents)}`)}"/>`;
   }).join('');
   const sourceNodes = layout.sources.map((node, index) => `<g data-node="source">
     <rect x="${node.x}" y="${node.portY}" width="10" height="${Math.max(1, node.flowHeight)}" rx="2" fill="${sourceColors[index % sourceColors.length]}"/>
@@ -195,7 +197,7 @@ export function renderSankey(data) {
     <text x="${node.x + 18}" y="${node.y + 43}" class="sankey-fund-value">In ${escapeHtml(money(node.revenueCents))} <tspan dx="8">Out ${escapeHtml(money(node.spendingCents))}</tspan></text>
     <title>${escapeHtml(node.label)}: recorded revenue ${exactMoney(node.revenueCents)}; recorded spending ${exactMoney(node.spendingCents)}</title>
     </g>`).join('');
-  const useNodes = layout.uses.map(node => `<g data-node="use">
+  const useNodes = layout.uses.map(node => `<g data-node="use" data-spending-root="${escapeHtml(node.id)}" role="button" tabindex="0" aria-label="${escapeHtml(`Open ${node.label}: ${exactMoney(node.cents)}`)}">
     <rect x="${node.x}" y="${node.portY}" width="10" height="${Math.max(1, node.flowHeight)}" rx="2" fill="#bd765d"/>
     ${nodeLabel(node, node.x + 17, 'start', 26, node.cents)}</g>`).join('');
   const reverse = layout.reverseLinks.map((link, index) => {
@@ -212,8 +214,8 @@ export function renderSankey(data) {
       <text x="350" y="${lane - 8}" text-anchor="middle" class="sankey-reverse-label">${escapeHtml(amount)} reverse adjustment</text></g>`;
   }).join('');
   const height = Math.max(670, 645 + layout.reverseLinks.length * 28);
-  return `<figure class="sankey-figure"><p class="sankey-scroll-hint">Swipe to see funds and spending →</p><div class="sankey-scroll" role="region" aria-label="Fund Sankey diagram; scroll horizontally on small screens" tabindex="0">
-    <svg viewBox="0 0 1200 ${height}" role="img" aria-labelledby="sankey-title sankey-description" xmlns="http://www.w3.org/2000/svg">
+  return `<figure class="sankey-figure"><div class="sankey-mobile-nav"><span>Explore the flow</span><button type="button" data-jump-spending>Jump to spending areas →</button></div><p class="sankey-scroll-hint">Swipe to see funds and spending →</p><div class="sankey-scroll" role="region" aria-label="Fund Sankey diagram; scroll horizontally on small screens" tabindex="0">
+    <svg viewBox="0 0 1200 ${height}" role="group" aria-labelledby="sankey-title sankey-description" xmlns="http://www.w3.org/2000/svg">
       <title id="sankey-title">FY2025 fund Sankey: revenue, city funds, and spending</title>
       <desc id="sankey-description">Five revenue categories feed four fund groups in the middle. Separate ribbons go from those funds to seven spending areas. A red reverse link shows a negative General Fund adjustment. The two sides are independent accounting actuals.</desc>
       <defs><marker id="reverse-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 Z" fill="#b85c45"/></marker></defs>

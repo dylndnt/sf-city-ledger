@@ -35,7 +35,7 @@ test('markup names the selected fund and preserves negative signs', () => {
   assert.match(html, /-\$20/);
   assert.match(html, /Public Protection/);
   assert.match(html, /Data as of/);
-  assert.match(html, /class="bar negative"/);
+  assert.match(html, /reverse adjustment/);
   assert.doesNotMatch(html, /surplus|deficit/i);
 });
 
@@ -47,21 +47,21 @@ test('source labels are escaped before insertion into the page', () => {
   assert.match(html, /&lt;img/);
 });
 
-test('citywide Sankey is the first view and detailed bars start collapsed', () => {
+test('citywide Sankey is the only opening chart', () => {
   const html = render(data);
   assert.ok(html.indexOf('class="sankey-figure"') > 0);
-  assert.ok(html.indexOf('class="sankey-figure"') < html.indexOf('<details'));
-  assert.match(html, /<summary>Explore details/);
-  assert.doesNotMatch(html, /<details[^>]*open/);
+  assert.doesNotMatch(html, /<summary>Explore details/);
   assert.match(html, /\$170/);
   assert.match(html, /\$120/);
   assert.match(html, /Data as of/);
 });
 
-test('spending areas open the drilldown from the existing details panel', () => {
+test('the opening chart is the entry point and selection zooms in place', () => {
   const snapshot = JSON.parse(readFileSync(new URL('../public/data/fy2025.json', import.meta.url)));
-  const html = render(snapshot, 'All city funds', '', true, { path: [] });
-  assert.match(html, /data-spending-root="02"/);
-  assert.match(html, /id="spending-drilldown"/);
-  assert.match(html, /Choose a spending area above/);
+  const opening = render(snapshot, 'All city funds', '', false, { path: [] });
+  const focused = render(snapshot, 'All city funds', '', false, { path: ['02'] });
+  assert.match(opening, /data-spending-root="02"/);
+  assert.doesNotMatch(opening, /id="details-panel"/);
+  assert.match(focused, /id="spending-drilldown"/);
+  assert.doesNotMatch(focused, /class="sankey-figure"/);
 });

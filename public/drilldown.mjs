@@ -44,6 +44,21 @@ export function drilldown(data, group = 'All city funds', fundCode = '', path = 
   };
 }
 
+export function compareSpending(current, previous, group = 'All city funds', fundCode = '', path = []) {
+  const selected = drilldown(current, group, fundCode, path);
+  const hasPriorScope = previous && previous.funds.some(fund =>
+    (group === 'All city funds' || fund.fundGroup === group) && (!fundCode || fund.fundCode === fundCode));
+  if (!hasPriorScope) return { ...selected, previous: null, change: null,
+    entries: selected.entries.map(entry => ({ ...entry, previous: null, change: null })) };
+  const earlier = drilldown(previous, group, fundCode, path);
+  const previousByCode = new Map(earlier.entries.map(entry => [entry.code, entry.amount]));
+  return { ...selected, previous: earlier.total, change: selected.total - earlier.total,
+    entries: selected.entries.map(entry => {
+      const prior = previousByCode.get(entry.code) ?? 0;
+      return { ...entry, previous: prior, change: entry.amount - prior };
+    }) };
+}
+
 const quoted = value => `'${String(value).replaceAll("'", "''")}'`;
 const resource = (id, query) => `https://data.sf.gov/resource/${id}.json?$query=${encodeURIComponent(query)}`;
 
@@ -76,19 +91,37 @@ export function vendorDetailUrl(fiscalYear, path, vendor, fundCode = '', offset 
   return resource('n9pm-xkyq', query);
 }
 
+export function vendorPriorUrl(fiscalYear, path, vendor, fundCode = '', fundTypeCodes = []) {
+  const where = vendorFilters(String(Number(fiscalYear) - 1), path, fundCode, fundTypeCodes);
+  where.push(`vendor=${quoted(vendor)}`);
+  return resource('n9pm-xkyq', `SELECT sum(vouchers_paid) AS paid WHERE ${where.join(' AND ')}`);
+}
+
 export function outcomeUrl(fiscalYear, departmentCode) {
   const department = scorecardDepartments[departmentCode];
   if (!department) return null;
-  const start = Number(fiscalYear) - 1;
+  const start = Number(fiscalYear) - 2;
   const query = `SELECT measure_code, department, goal, measure_title, measure_description, measure_methodology, calendar_month, actual, target, measure_data_type, data_as_of WHERE department=${quoted(department)} AND calendar_month between '${start}-07-01T00:00:00' and '${fiscalYear}-06-30T23:59:59' AND actual IS NOT NULL AND actual != -9999 ORDER BY calendar_month DESC LIMIT 5000`;
   return resource('kc49-udxn', query);
 }
 
-export function latestOutcomes(rows) {
+export function latestOutcomes(rows, fiscalYear = null) {
   const latest = new Map();
   for (const row of [...rows].sort((a, b) => b.calendar_month.localeCompare(a.calendar_month))) {
     if (Number(row.actual) === -9999) continue;
-    if (!latest.has(row.measure_code)) latest.set(row.measure_code, row);
+    const year = Number(row.calendar_month.slice(0, 4));
+    const month = Number(row.calendar_month.slice(5, 7));
+    const observationYear = month >= 7 ? year + 1 : year;
+    if (!fiscalYear) {
+      if (!latest.has(row.measure_code)) latest.set(row.measure_code, row);
+      continue;
+    }
+    if (observationYear !== Number(fiscalYear) && observationYear !== Number(fiscalYear) - 1) continue;
+    const key = `${row.measure_code}:${observationYear}`;
+    if (!latest.has(key)) latest.set(key, row);
   }
-  return [...latest.values()].sort((a, b) => (a.measure_title || '').localeCompare(b.measure_title || ''));
+  if (!fiscalYear) return [...latest.values()].sort((a, b) => (a.measure_title || '').localeCompare(b.measure_title || ''));
+  return [...latest.entries()].filter(([key]) => key.endsWith(`:${fiscalYear}`)).map(([key, row]) => ({
+    ...row, previous: latest.get(`${row.measure_code}:${Number(fiscalYear) - 1}`) ?? null,
+  })).sort((a, b) => (a.measure_title || '').localeCompare(b.measure_title || ''));
 }

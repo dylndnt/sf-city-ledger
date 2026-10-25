@@ -40,11 +40,13 @@ The API is public; Socrata says an application token raises request limits. A we
 
 ## Spending detail, vendor payments, and outcomes
 
+The site also commits a validated FY2024 snapshot from the same DataSF dataset. Its `spendingDetails` use the same classification path and signed amounts as FY2025. The chart matches exact codes within the selected fund scope and shows FY2025 less FY2024. A newly introduced or retired code can legitimately produce a large change; a missing prior snapshot is labeled unavailable rather than treated as zero. Both snapshots currently report source data as of October 18, 2026.
+
 The static FY2025 JSON includes `spendingDetails`, grouped by fund, organization group, department, program, character, object, and sub-object. Its signed amount sum reconciles to the spending total in the same source snapshot. The deeper path can identify the city department and program but cannot name an outside payee by itself.
 
 Named payees come from the Controller's separate [Vendor Payments (Vouchers)](https://data.sf.gov/d/n9pm-xkyq) dataset. The site requests paid vouchers for the exact selected codes. The source excludes some sensitive payment categories and covers only vendor-related spending; its paid-voucher figures are not a partition of the Spending and Revenue total. Individual vendor records can have different `data_as_of` values. The site pages results rather than silently truncating them.
 
-The [Scorecard Measures](https://data.sf.gov/d/kc49-udxn) dataset supplies observed department performance measures. The site uses explicit department-code mappings and the latest observation dated within FY2025, excluding the source's `-9999` missing-value marker. Some measures follow calendar-year or other reporting methods; the observation date does not turn them into FY2025 causal outcomes. No program-level or vendor-level causal link is asserted.
+The [Scorecard Measures](https://data.sf.gov/d/kc49-udxn) dataset supplies observed department performance measures. The site uses explicit department-code mappings and the latest observation dated within each of FY2025 and FY2024, excluding the source's `-9999` missing-value marker. It displays both dates and a signed arithmetic change (percentage points for proportions). Missing prior observations are labeled unavailable. Some measures follow calendar-year or other reporting methods; the observation date does not turn them into causal fiscal-year outcomes. No program-level or vendor-level causal link is asserted.
 
 ## Fund layer and Sankey limitation
 

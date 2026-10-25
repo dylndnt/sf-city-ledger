@@ -10,7 +10,7 @@ from urllib.request import Request, urlopen
 
 from scripts.build_data import build_snapshot, write_if_changed
 
-MIN_FY2025_ROWS = 20_000
+MIN_CLOSED_YEAR_ROWS = 20_000
 MAX_DOWNLOAD_BYTES = 40_000_000
 
 
@@ -36,8 +36,8 @@ def refresh(fiscal_year: str, output: Path, archive: Path) -> bool:
     archive.joinpath(f"spending-revenue-fy{fiscal_year}-{stamp}.csv").write_bytes(raw)
     archive.joinpath(f"source-metadata-{stamp}.json").write_bytes(metadata)
     snapshot = build_snapshot(raw, fiscal_year, fetched_at.isoformat())
-    if fiscal_year == "2025" and snapshot["sourceRows"] < MIN_FY2025_ROWS:
-        raise ValueError(f"incomplete source: {snapshot['sourceRows']} FY2025 rows")
+    if fiscal_year in {"2024", "2025"} and snapshot["sourceRows"] < MIN_CLOSED_YEAR_ROWS:
+        raise ValueError(f"incomplete source: {snapshot['sourceRows']} FY{fiscal_year} rows")
     return write_if_changed(snapshot, output)
 
 

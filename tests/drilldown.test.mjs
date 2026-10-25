@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { drilldown, vendorUrl, vendorDetailUrl, outcomeUrl, latestOutcomes } from '../public/drilldown.mjs';
+import { drilldown, compareSpending, vendorUrl, vendorDetailUrl, vendorPriorUrl, outcomeUrl, latestOutcomes } from '../public/drilldown.mjs';
 
 const data = JSON.parse(readFileSync(new URL('../public/data/fy2025.json', import.meta.url)));
 
@@ -45,9 +45,44 @@ test('outcome query is limited to observed FY2025 values for an explicit departm
   assert.match(query, /department='Public Works'/);
   assert.match(query, /actual IS NOT NULL/);
   assert.match(query, /actual != -9999/);
-  assert.match(query, /2024-07-01/);
+  assert.match(query, /2023-07-01/);
   assert.match(query, /2025-06-30/);
   assert.equal(outcomeUrl('2025', 'AIR'), null);
+});
+
+test('spending comparison matches category codes and preserves signed changes', () => {
+  const current = { ...data, spendingDetails: [
+    { fundCode: 'F', organizationGroupCode: '02', organizationGroup: 'Works', amount: 500 },
+    { fundCode: 'F', organizationGroupCode: '03', organizationGroup: 'Health', amount: -20 },
+  ], funds: [{ fundCode: 'F', fundGroup: 'General Fund' }] };
+  const previous = { ...current, spendingDetails: [
+    { fundCode: 'F', organizationGroupCode: '02', organizationGroup: 'Works', amount: 600 },
+    { fundCode: 'F', organizationGroupCode: '03', organizationGroup: 'Health', amount: 10 },
+  ] };
+  const rows = compareSpending(current, previous, 'General Fund', '', []);
+  assert.deepEqual(rows.entries.map(row => [row.code, row.amount, row.previous, row.change]),
+    [['02', 500, 600, -100], ['03', -20, 10, -30]]);
+});
+
+test('an individual fund absent in the prior snapshot is unavailable, not zero', () => {
+  const current = { funds: [{ fundCode: 'NEW', fundGroup: 'General Fund' }],
+    spendingDetails: [{ fundCode: 'NEW', organizationGroupCode: '02', organizationGroup: 'Works', amount: 100 }] };
+  const prior = { funds: [], spendingDetails: [] };
+  const compared = compareSpending(current, prior, 'General Fund', 'NEW', ['02']);
+  assert.equal(compared.previous, null);
+  assert.equal(compared.change, null);
+});
+
+test('outcome comparison keeps latest observation in each fiscal year', () => {
+  const rows = [
+    { measure_code: 'A', calendar_month: '2024-04-01', actual: '10' },
+    { measure_code: 'A', calendar_month: '2024-06-01', actual: '12' },
+    { measure_code: 'A', calendar_month: '2025-03-01', actual: '15' },
+    { measure_code: 'B', calendar_month: '2025-05-01', actual: '2' },
+  ];
+  const paired = latestOutcomes(rows, '2025');
+  assert.equal(paired.find(row => row.measure_code === 'A').previous.actual, '12');
+  assert.equal(paired.find(row => row.measure_code === 'B').previous, null);
 });
 
 test('selected payee query reaches individual vouchers within the exact path', () => {
@@ -58,6 +93,16 @@ test('selected payee query reaches individual vouchers within the exact path', (
   assert.match(query, /SELECT voucher, purchase_order, contract_number, contract_title, vouchers_paid, data_as_of/);
   assert.match(query, /vouchers_paid IS NOT NULL/);
   assert.match(query, /LIMIT 51 OFFSET 0/);
+});
+
+test('selected payee prior-year query preserves exact path and fund scope', () => {
+  const path = ['02', 'DPW', 'CAP', 'NON_PERS_SVCS', 'PROF_SPEC_SVC', '527040'];
+  const query = new URL(vendorPriorUrl('2025', path, "O'BRIEN CO", 'GEN_FUND~1')).searchParams.get('$query');
+  assert.match(query, /fiscal_year='2024'/);
+  assert.match(query, /vendor='O''BRIEN CO'/);
+  assert.match(query, /sub_object_code='527040'/);
+  assert.match(query, /fund_code='GEN_FUND~1'/);
+  assert.match(query, /sum\(vouchers_paid\) AS paid/);
 });
 
 test('outcome list keeps the latest observed value for each measure', () => {

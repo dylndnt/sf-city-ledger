@@ -1,11 +1,12 @@
 import { render } from './view.mjs';
-import { latestOutcomes, outcomeUrl, vendorUrl, vendorDetailUrl, spendingLevels } from './drilldown.mjs';
+import { latestOutcomes, outcomeUrl, vendorUrl, vendorDetailUrl, vendorPriorUrl, spendingLevels } from './drilldown.mjs';
+import { loadSnapshots } from './load-data.mjs';
 
 const root = document.getElementById('app');
-let group = 'All city funds', fundCode = '', data;
+let group = 'All city funds', fundCode = '', data, previousData;
 let explorer = { path: [], vendors: [], vendorStatus: 'idle', vendorHasMore: false,
   selectedVendor: '', vouchers: [], voucherStatus: 'idle', voucherHasMore: false,
-  outcomes: [], outcomeStatus: 'idle' };
+  outcomes: [], outcomeStatus: 'idle', priorVendorStatus: 'idle' };
 let requestGeneration = 0;
 let voucherGeneration = 0;
 const hideFlowTooltip = () => {
@@ -26,7 +27,6 @@ const showFlowTooltip = (flow, event) => {
 };
 const draw = () => {
   hideFlowTooltip();
-  const detailsOpen = root.querySelector('#details-panel')?.open ?? false;
   const focused = document.activeElement;
   const inDrilldown = root.querySelector('#spending-drilldown')?.contains(focused);
   const focusId = inDrilldown && focused.id;
@@ -34,7 +34,7 @@ const draw = () => {
     'retryVendors', 'retryVouchers', 'retryOutcomes']
     .find(key => Object.hasOwn(focused.dataset, key));
   const focusValue = focusData && focused.dataset[focusData];
-  root.innerHTML = render(data, group, fundCode, detailsOpen, explorer);
+  root.innerHTML = render(data, group, fundCode, false, explorer, previousData);
   if (inDrilldown) {
     const replacement = (focusId && root.querySelector(`#${focusId}`))
       || (focusData && [...root.querySelectorAll(`[data-${focusData.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)}]`)]
@@ -49,7 +49,7 @@ const resetExplorer = path => {
   voucherGeneration++;
   explorer = { path, vendors: [], vendorStatus: 'idle', vendorHasMore: false,
     selectedVendor: '', vouchers: [], voucherStatus: 'idle', voucherHasMore: false,
-    outcomes: [], outcomeStatus: 'idle' };
+    outcomes: [], outcomeStatus: 'idle', priorVendorStatus: 'idle' };
 };
 
 const selectedFundTypes = () => group === 'All city funds' ? [] :
@@ -66,7 +66,7 @@ const loadOutcomes = async () => {
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const rows = await response.json();
     if (generation !== requestGeneration) return;
-    explorer.outcomes = latestOutcomes(rows);
+    explorer.outcomes = latestOutcomes(rows, data.fiscalYear);
     explorer.outcomeStatus = 'ready';
   } catch {
     if (generation !== requestGeneration) return;
@@ -115,6 +115,25 @@ const loadVouchers = async (offset = 0) => {
   draw();
 };
 
+const loadPriorVendor = async () => {
+  const generation = requestGeneration;
+  const vendor = explorer.selectedVendor;
+  explorer.priorVendorStatus = 'loading'; draw();
+  try {
+    const response = await fetch(vendorPriorUrl(data.fiscalYear, explorer.path, vendor,
+      fundCode, selectedFundTypes()));
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const rows = await response.json();
+    if (generation !== requestGeneration || vendor !== explorer.selectedVendor) return;
+    explorer.previousVendorPaid = rows[0]?.paid ?? 0;
+    explorer.priorVendorStatus = 'ready';
+  } catch {
+    if (generation !== requestGeneration || vendor !== explorer.selectedVendor) return;
+    explorer.priorVendorStatus = 'error';
+  }
+  draw();
+};
+
 const choosePath = path => {
   const previous = explorer;
   resetExplorer(path);
@@ -140,8 +159,19 @@ root.addEventListener('focusout', event => {
   if (event.target.closest?.('[data-flow]')) hideFlowTooltip();
 });
 root.addEventListener('scroll', hideFlowTooltip, true);
+root.addEventListener('keydown', event => {
+  if ((event.key === 'Enter' || event.key === ' ') && event.target.matches?.('[data-spending-root]')) {
+    event.preventDefault();
+    choosePath([event.target.dataset.spendingRoot]);
+  }
+});
 
 root.addEventListener('click', event => {
+  if (event.target.closest('[data-jump-spending]')) {
+    const scroller = root.querySelector('.sankey-scroll');
+    scroller?.scrollTo({ left: scroller.scrollWidth - scroller.clientWidth, behavior: 'smooth' });
+    return;
+  }
   const spendingRoot = event.target.closest('[data-spending-root]');
   if (spendingRoot) { choosePath([spendingRoot.dataset.spendingRoot]); return; }
   const next = event.target.closest('[data-next-code]');
@@ -151,8 +181,10 @@ root.addEventListener('click', event => {
   const vendor = event.target.closest('[data-vendor]');
   if (vendor) {
     explorer.selectedVendor = vendor.dataset.vendor;
+    explorer.selectedVendorPaid = explorer.vendors.find(row => row.vendor === explorer.selectedVendor)?.paid ?? 0;
+    explorer.previousVendorPaid = null; explorer.priorVendorStatus = 'idle';
     explorer.vouchers = []; explorer.voucherStatus = 'idle'; explorer.voucherHasMore = false;
-    draw(); loadVouchers(); return;
+    draw(); loadVouchers(); loadPriorVendor(); return;
   }
   if (event.target.closest('[data-more-vendors]')) { loadVendors(explorer.vendors.length); return; }
   if (event.target.closest('[data-retry-vendors]')) { loadVendors(explorer.vendors.length); return; }
@@ -171,6 +203,10 @@ root.addEventListener('click', event => {
   }
 });
 root.addEventListener('change', event => {
+  if (event.target.id === 'group-select') {
+    group = event.target.value; fundCode = ''; resetExplorer([]); draw();
+    root.querySelector('#group-select')?.focus();
+  }
   if (event.target.id === 'fund-select') {
     fundCode = event.target.value; resetExplorer([]); draw();
     root.querySelector('#fund-select')?.focus();
@@ -178,9 +214,7 @@ root.addEventListener('change', event => {
 });
 
 try {
-  const response = await fetch('./data/fy2025.json');
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  data = await response.json();
+  ({ data, previousData } = await loadSnapshots());
   draw();
 } catch {
   root.innerHTML = '<h1>Data unavailable</h1><p>The FY2025 snapshot could not be loaded. Please try again later.</p>';

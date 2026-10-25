@@ -91,3 +91,10 @@ test('real FY2025 snapshot renders all nodes and one visible reverse adjustment'
   assert.match(html, /−\$1\.05B/);
   assert.match(html, /Public Works, Transportation/);
 });
+
+test('narrow-screen chart offers a direct jump to clickable spending areas', () => {
+  const html = renderSankey(fixture);
+  assert.match(html, /data-jump-spending/);
+  assert.match(html, /data-spending-root="04"/);
+  assert.match(html, /<svg[^>]*role="group"/);
+});
