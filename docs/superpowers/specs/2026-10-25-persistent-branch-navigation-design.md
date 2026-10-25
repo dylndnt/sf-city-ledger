@@ -8,6 +8,7 @@ Keep the selected spending category visible while exploring its children, with e
 
 - The opening Sankey remains the entry point. Choosing a spending area opens the branch view inside the same chart frame.
 - The branch view shows up to three adjacent classification levels. Its left columns show the selected category and its siblings; the right column shows the next choices. The selected items use the dark accent, while siblings have a muted surface and remain readable, keyboard accessible, and clickable.
+- Categories retain their amount-ranked positions when selected. Existing columns keep their DOM nodes and scroll offsets as the highlight changes; only branches whose path changes are replaced. A newly opened ancestor strip scrolls just enough to reveal its selected item.
 - Choosing a sibling replaces the path from that level onward. Choosing a child advances one level. The full breadcrumb stays above the columns, including levels that have scrolled out of the visible window.
 - At the final sub-object, the final column presents payees. Choosing a payee reveals vouchers without losing the selected classification path.
 - Each column has a short description of what that classification level means. Copy describes the level, not a claim about the purpose or impact of a particular line item.

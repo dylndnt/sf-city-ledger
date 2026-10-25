@@ -25,6 +25,50 @@ const showFlowTooltip = (flow, event) => {
   tooltip.style.left = `${Math.max(12, Math.min(x + 16, window.innerWidth - tooltip.offsetWidth - 12))}px`;
   tooltip.style.top = `${Math.max(12, Math.min(y + 16, window.innerHeight - tooltip.offsetHeight - 12))}px`;
 };
+const reuseBranchColumns = next => {
+  const scrollPositions = [];
+  const previous = new Map([...root.querySelectorAll('.branch-column[data-branch-key]')]
+    .map(column => [column.dataset.branchKey, column]));
+  for (const incoming of next.querySelectorAll('.branch-column[data-branch-key]')) {
+    const existing = previous.get(incoming.dataset.branchKey);
+    if (!existing) continue;
+    const oldButtons = [...existing.querySelectorAll('.branch-item')];
+    const newButtons = [...incoming.querySelectorAll('.branch-item')];
+    const code = button => button.dataset.branchCode ?? button.dataset.nextCode;
+    if (oldButtons.length !== newButtons.length || oldButtons.some((button, index) => code(button) !== code(newButtons[index]))) continue;
+    const list = existing.querySelector('ul');
+    scrollPositions.push({ list, top: list.scrollTop, left: list.scrollLeft });
+    for (let index = 0; index < oldButtons.length; index++) {
+      const oldButton = oldButtons[index];
+      const newButton = newButtons[index];
+      oldButton.className = newButton.className;
+      for (const name of ['data-next-code', 'data-branch-depth', 'data-branch-code', 'data-focus-key', 'aria-current']) {
+        if (newButton.hasAttribute(name)) oldButton.setAttribute(name, newButton.getAttribute(name));
+        else oldButton.removeAttribute(name);
+      }
+      oldButton.querySelector('.branch-arrow').textContent = newButton.querySelector('.branch-arrow').textContent;
+    }
+    const keepAnimation = existing.classList.contains('is-animated') && incoming.classList.contains('is-entering');
+    existing.className = incoming.className + (keepAnimation && !incoming.classList.contains('is-animated') ? ' is-animated' : '');
+    incoming.replaceWith(existing);
+  }
+  return scrollPositions;
+};
+const keepSelectedVisible = () => {
+  for (const column of root.querySelectorAll('.branch-column.is-ancestor')) {
+    const list = column.querySelector('ul');
+    const selected = list?.querySelector('.is-selected');
+    if (!selected) continue;
+    const viewport = list.getBoundingClientRect();
+    const item = selected.getBoundingClientRect();
+    if (item.left < viewport.left || item.right > viewport.right) {
+      list.scrollLeft += item.left - viewport.left - (viewport.width - item.width) / 2;
+    }
+    if (item.top < viewport.top || item.bottom > viewport.bottom) {
+      list.scrollTop += item.top - viewport.top - (viewport.height - item.height) / 2;
+    }
+  }
+};
 const draw = () => {
   hideFlowTooltip();
   const focused = document.activeElement;
@@ -36,10 +80,18 @@ const draw = () => {
   const focusValue = focusData && focused.dataset[focusData];
   const openInfoKeys = new Set([...root.querySelectorAll('details[data-info-key][open]')]
     .map(detail => detail.dataset.infoKey));
-  root.innerHTML = render(data, group, fundCode, false, explorer, previousData);
+  const next = document.createElement('div');
+  next.innerHTML = render(data, group, fundCode, false, explorer, previousData);
+  const scrollPositions = reuseBranchColumns(next);
+  root.replaceChildren(...next.childNodes);
+  for (const { list, top, left } of scrollPositions) {
+    list.scrollTop = top;
+    list.scrollLeft = left;
+  }
   for (const detail of root.querySelectorAll('details[data-info-key]')) {
     detail.open = openInfoKeys.has(detail.dataset.infoKey);
   }
+  if (explorer.animate) keepSelectedVisible();
   if (inDrilldown) {
     const replacement = (focusId && root.querySelector(`#${focusId}`))
       || (focusData && [...root.querySelectorAll(`[data-${focusData.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)}]`)]
@@ -141,6 +193,7 @@ const loadPriorVendor = async () => {
 
 const choosePath = path => {
   const previous = explorer;
+  const enteringChart = previous.path.length === 0;
   resetExplorer(path);
   explorer.animate = true;
   if (path[1] && path[1] === previous.path[1] && previous.outcomeStatus === 'ready') {
@@ -148,7 +201,7 @@ const choosePath = path => {
     explorer.outcomeStatus = 'ready';
   }
   draw();
-  root.querySelector('#spending-drilldown')?.scrollIntoView({ block: 'start',
+  if (enteringChart) root.querySelector('#spending-drilldown')?.scrollIntoView({ block: 'start',
     behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
   root.querySelector('#drill-heading')?.focus({ preventScroll: true });
   if (explorer.outcomeStatus !== 'ready') loadOutcomes();

@@ -31,9 +31,7 @@ function branchColumn(data, previousData, group, fundCode, path, depth, animate 
   const level = spendingLevels[depth];
   const selectedCode = path[depth];
   const ancestor = depth < path.length;
-  const entries = ancestor
-    ? [...branch.entries].sort((a, b) => (b.code === selectedCode) - (a.code === selectedCode))
-    : branch.entries;
+  const entries = branch.entries;
   const maxAmount = Math.max(1, ...entries.map(item => Math.abs(item.amount)));
   const rows = entries.map(item => {
     const current = item.code === selectedCode;
@@ -43,7 +41,8 @@ function branchColumn(data, previousData, group, fundCode, path, depth, animate 
       : `data-next-code="${safe(item.code)}"`;
     return `<li><button type="button" class="${className}" ${action}><span class="branch-bar" style="--flow-width:${Math.max(2, 100 * Math.abs(item.amount) / maxAmount)}%"></span><span class="branch-row"><span class="branch-name">${safe(item.label)}<small>${safe(item.code)}</small></span><strong>${money(item.amount)}<small>${share(item.amount, branch.total)}</small></strong><span class="branch-arrow" aria-hidden="true">${current ? '●' : '↗'}</span></span><span class="branch-compare">${priorLine(item, data.fiscalYear)}</span></button></li>`;
   }).join('');
-  return `<section class="branch-column ${ancestor ? 'is-ancestor' : `is-entering${animate ? ' is-animated' : ''}`}" data-branch-level="${depth}" aria-label="${safe(level.name)}"><header class="branch-column-head"><span>${safe(level.name)}</span><p>${safe(level.description)}</p></header><ul>${rows}</ul></section>`;
+  const key = safe(JSON.stringify([group, fundCode, depth, prefix]));
+  return `<section class="branch-column ${ancestor ? 'is-ancestor' : `is-entering${animate ? ' is-animated' : ''}`}" data-branch-level="${depth}" data-branch-key="${key}" aria-label="${safe(level.name)}"><header class="branch-column-head"><span>${safe(level.name)}</span><p>${safe(level.description)}</p></header><ul>${rows}</ul></section>`;
 }
 
 function vendorSection(state) {

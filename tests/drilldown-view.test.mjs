@@ -87,6 +87,13 @@ test('selected path stays visible beside muted siblings and next choices', () =>
   assert.doesNotMatch(html, /class="branch-item[^\"]*"[^>]*aria-label=/);
 });
 
+test('selecting a department keeps the original sibling order', () => {
+  const html = renderDrilldown(data, 'All city funds', '', { path: ['02', 'DPW'] }, previous);
+  const department = html.slice(html.indexOf('data-branch-level="1"'));
+  assert.ok(department.indexOf('data-branch-code="PUC"') < department.indexOf('data-branch-code="DPW"'));
+  assert.match(department, /data-branch-key=/);
+});
+
 test('each visible level explains its classification and caveats use disclosures', () => {
   const html = renderDrilldown(data, 'All city funds', '', { path: ['02', 'DPW'] }, previous);
   assert.match(html, /Citywide grouping of departments/);
