@@ -55,22 +55,61 @@ const reuseBranchColumns = next => {
   return scrollPositions;
 };
 const keepSelectedVisible = () => {
+  const smooth = !matchMedia('(prefers-reduced-motion: reduce)').matches;
   for (const column of root.querySelectorAll('.branch-column.is-ancestor')) {
     const list = column.querySelector('ul');
     const selected = list?.querySelector('.is-selected');
     if (!selected) continue;
     const viewport = list.getBoundingClientRect();
     const item = selected.getBoundingClientRect();
+    let left = list.scrollLeft;
+    let top = list.scrollTop;
     if (item.left < viewport.left || item.right > viewport.right) {
-      list.scrollLeft += item.left - viewport.left - (viewport.width - item.width) / 2;
+      left += item.left - viewport.left - (viewport.width - item.width) / 2;
     }
     if (item.top < viewport.top || item.bottom > viewport.bottom) {
-      list.scrollTop += item.top - viewport.top - (viewport.height - item.height) / 2;
+      top += item.top - viewport.top - (viewport.height - item.height) / 2;
     }
+    if (left === list.scrollLeft && top === list.scrollTop) continue;
+    if (smooth && list.scrollTo) list.scrollTo({ left, top, behavior: 'smooth' });
+    else { list.scrollLeft = left; list.scrollTop = top; }
   }
+};
+const branchPositions = () => new Map([...root.querySelectorAll('.branch-column[data-branch-key]')]
+  .map(column => [column.dataset.branchKey, column.getBoundingClientRect()]));
+const easeBranchMovement = previous => {
+  if (!previous || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  for (const column of root.querySelectorAll('.branch-column[data-branch-key]')) {
+    const before = previous.get(column.dataset.branchKey);
+    if (!before || !column.animate) continue;
+    const after = column.getBoundingClientRect();
+    if (!before.width || !after.width) continue;
+    const dx = before.left - after.left;
+    const dy = before.top - after.top;
+    if (Math.abs(dx) < 1 && Math.abs(dy) < 1) continue;
+    column.animate([
+      { transform: `translate(${dx}px, ${dy}px)` },
+      { transform: 'translate(0, 0)' },
+    ], { duration: 240, easing: 'cubic-bezier(.2,.7,.2,1)' });
+  }
+};
+const updateDrilldown = (current, incoming) => {
+  for (const selector of ['.drill-head .step', '.drill-head h2', '.drill-head>span',
+    '.drill-total>span', '.drill-total>strong', '.drill-total>small']) {
+    current.querySelector(selector).textContent = incoming.querySelector(selector).textContent;
+  }
+  for (const selector of ['.drill-breadcrumb', '.branch-flow']) {
+    current.querySelector(selector).replaceChildren(...incoming.querySelector(selector).childNodes);
+  }
+  const related = current.querySelector('.related-grid');
+  const nextRelated = incoming.querySelector('.related-grid');
+  if (related && nextRelated) related.replaceWith(nextRelated);
+  else if (related) related.remove();
+  else if (nextRelated) current.querySelector('.zoom-workspace').append(nextRelated);
 };
 const draw = () => {
   hideFlowTooltip();
+  const previousPositions = explorer.animate ? branchPositions() : null;
   const focused = document.activeElement;
   const inDrilldown = root.querySelector('#spending-drilldown')?.contains(focused);
   const focusId = inDrilldown && focused.id;
@@ -83,7 +122,16 @@ const draw = () => {
   const next = document.createElement('div');
   next.innerHTML = render(data, group, fundCode, false, explorer, previousData);
   const scrollPositions = reuseBranchColumns(next);
-  root.replaceChildren(...next.childNodes);
+  const stage = root.querySelector('.chart-stage');
+  const nextStage = next.querySelector('.chart-stage');
+  const sameScope = root.querySelector('#group-select')?.value === group
+    && (root.querySelector('#fund-select')?.value || '') === fundCode;
+  if (stage && sameScope) {
+    const drilldown = stage.querySelector('#spending-drilldown');
+    const nextDrilldown = nextStage.querySelector('#spending-drilldown');
+    if (drilldown && nextDrilldown) updateDrilldown(drilldown, nextDrilldown);
+    else stage.replaceChildren(...nextStage.childNodes);
+  } else root.replaceChildren(...next.childNodes);
   for (const { list, top, left } of scrollPositions) {
     list.scrollTop = top;
     list.scrollLeft = left;
@@ -92,6 +140,7 @@ const draw = () => {
     detail.open = openInfoKeys.has(detail.dataset.infoKey);
   }
   if (explorer.animate) keepSelectedVisible();
+  easeBranchMovement(previousPositions);
   if (inDrilldown) {
     const replacement = (focusId && root.querySelector(`#${focusId}`))
       || (focusData && [...root.querySelectorAll(`[data-${focusData.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)}]`)]
