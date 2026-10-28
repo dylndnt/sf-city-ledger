@@ -93,14 +93,21 @@ const easeBranchMovement = previous => {
     ], { duration: 240, easing: 'cubic-bezier(.2,.7,.2,1)' });
   }
 };
+const keepPathVisible = () => {
+  const path = root.querySelector('.drill-breadcrumb');
+  if (!path || path.scrollWidth <= path.clientWidth) return;
+  path.scrollLeft = path.scrollWidth - path.clientWidth;
+};
 const updateDrilldown = (current, incoming) => {
   for (const selector of ['.drill-head .step', '.drill-head h2', '.drill-head>span',
     '.drill-total>span', '.drill-total>strong', '.drill-total>small']) {
     current.querySelector(selector).textContent = incoming.querySelector(selector).textContent;
   }
-  for (const selector of ['.drill-breadcrumb', '.branch-flow']) {
-    current.querySelector(selector).replaceChildren(...incoming.querySelector(selector).childNodes);
-  }
+  const path = current.querySelector('.drill-breadcrumb');
+  const pathScroll = path.scrollLeft;
+  path.replaceChildren(...incoming.querySelector('.drill-breadcrumb').childNodes);
+  path.scrollLeft = pathScroll;
+  current.querySelector('.branch-flow').replaceChildren(...incoming.querySelector('.branch-flow').childNodes);
   const related = current.querySelector('.related-grid');
   const nextRelated = incoming.querySelector('.related-grid');
   if (related && nextRelated) related.replaceWith(nextRelated);
@@ -139,7 +146,7 @@ const draw = () => {
   for (const detail of root.querySelectorAll('details[data-info-key]')) {
     detail.open = openInfoKeys.has(detail.dataset.infoKey);
   }
-  if (explorer.animate) keepSelectedVisible();
+  if (explorer.animate) { keepSelectedVisible(); keepPathVisible(); }
   easeBranchMovement(previousPositions);
   if (inDrilldown) {
     const replacement = (focusId && root.querySelector(`#${focusId}`))
