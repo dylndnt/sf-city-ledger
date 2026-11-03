@@ -39,7 +39,7 @@ function branchColumn(data, previousData, group, fundCode, path, depth, animate 
     const action = ancestor
       ? `data-branch-depth="${depth}" data-branch-code="${safe(item.code)}" data-focus-key="${depth}:${safe(item.code)}"${current ? ' aria-current="step"' : ''}`
       : `data-next-code="${safe(item.code)}"`;
-    return `<li><button type="button" class="${className}" ${action}><span class="branch-bar" style="--flow-width:${Math.max(2, 100 * Math.abs(item.amount) / maxAmount)}%"></span><span class="branch-row"><span class="branch-name">${safe(item.label)}<small title="${safe(item.code)}">${safe(item.code)}</small></span><strong>${money(item.amount)}<small>${share(item.amount, branch.total)}</small></strong><span class="branch-arrow" aria-hidden="true">${current ? '●' : '↗'}</span></span><span class="branch-compare">${priorLine(item, data.fiscalYear)}</span></button></li>`;
+    return `<li><button type="button" class="${className}" ${action}><span class="branch-bar" style="--flow-width:${Math.max(2, 100 * Math.abs(item.amount) / maxAmount)}%"></span><span class="branch-row"><span class="branch-name">${safe(item.label)}<small title="${safe(item.code)}">${safe(item.code)}</small></span><strong>${money(item.amount)}<small>${share(item.amount, branch.total)}</small></strong><span class="branch-arrow" aria-hidden="true">${current ? '●' : '→'}</span></span><span class="branch-compare">${priorLine(item, data.fiscalYear)}</span></button></li>`;
   }).join('');
   const key = safe(JSON.stringify([group, fundCode, depth, prefix]));
   return `<section class="branch-column ${ancestor ? 'is-ancestor' : `is-entering${animate ? ' is-animated' : ''}`}" data-branch-level="${depth}" data-branch-key="${key}" aria-label="${safe(level.name)}"><header class="branch-column-head"><span><strong>${safe(level.name)}</strong><small>LEVEL ${depth + 1} / ${spendingLevels.length}</small></span><p>${safe(level.description)}</p></header><ul>${rows}</ul></section>`;
@@ -107,7 +107,7 @@ export function renderDrilldown(data, group, fundCode, state = {}, previousData 
     : '';
   const prior = selected.previous === null ? 'Prior-year spending unavailable' :
     `FY${safe(Number(data.fiscalYear) - 1)} ${money(selected.previous)} · change ${selected.change >= 0 ? '+' : ''}${money(selected.change)}`;
-  return `<section class="zoom-chart drilldown" id="spending-drilldown" aria-labelledby="drill-heading"><div class="drill-head"><div><p class="step">FOLLOW THE SPENDING / LEVEL ${path.length} OF ${spendingLevels.length}</p><h2 id="drill-heading" tabindex="-1">${safe(selected.breadcrumbs.at(-1)?.label || 'All spending')}</h2></div><span>Next: ${level}</span></div>
+  return `<section class="zoom-chart drilldown" id="spending-drilldown" aria-labelledby="drill-heading"><div class="drill-head"><div><p class="step">Spending path · level ${path.length} of ${spendingLevels.length}</p><h2 id="drill-heading" tabindex="-1">${safe(selected.breadcrumbs.at(-1)?.label || 'All spending')}</h2></div><span>Next: ${level}</span></div>
     ${crumb}<div class="drill-total"><span>Recorded spending in this path</span><strong>${money(selected.total)}</strong><small>${prior}</small></div>
     <div class="zoom-workspace"><div>${options}</div>${related}</div></section>`;
 }

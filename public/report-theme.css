@@ -1,0 +1,247 @@
+/* A restrained public-record treatment for the chart and its drilldown. */
+:root {
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: #202622;
+  background: #fff;
+}
+
+main { max-width: 1420px; padding: 0 30px 32px; }
+a { text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid #204e40; outline-offset: 2px; }
+
+.masthead {
+  height: 43px;
+  border-bottom: 2px solid #202622;
+  font-size: 13px;
+  font-weight: 750;
+  letter-spacing: -.01em;
+}
+.masthead-right { color: #5e6660; font-size: 11px; font-weight: 500; letter-spacing: 0; }
+.chart-intro { align-items: start; padding: 22px 0 18px; }
+.chart-intro .eyebrow, .step {
+  margin-bottom: 7px;
+  color: #58635c;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.chart-intro h1 {
+  margin: 0 0 7px;
+  font: 700 clamp(30px, 3vw, 41px)/1.1 "Segoe UI", Arial, sans-serif;
+  letter-spacing: -.045em;
+}
+.chart-intro p:last-child { color: #505a53; font-size: 14px; line-height: 1.45; }
+.source-meta { color: #58635c; font-size: 11px; gap: 5px; }
+.source-meta a, footer a { color: #254f42; }
+.chart-toolbar {
+  gap: 22px;
+  margin-bottom: 8px;
+  padding: 11px 0;
+  border-color: #bbc3bc;
+}
+.chart-totals { gap: 26px; }
+.chart-totals > span, .scope-control {
+  color: #59635c;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.chart-totals strong {
+  color: #202622;
+  font-size: 22px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -.03em;
+}
+.scope-control select {
+  border-color: #aab4ab;
+  border-radius: 0;
+  background: #fff;
+  color: #202622;
+  font-size: 12px;
+  font-weight: 600;
+}
+.chart-help { color: #254f42; font-size: 12px; font-weight: 500; }
+.chart-help > div, .info-tip > div {
+  border-radius: 0;
+  background: #26332c;
+  box-shadow: none;
+  font-size: 12px;
+}
+
+.sankey-figure { padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.sankey-figure figcaption { border-color: #d2d8d2; color: #5b655e; font-size: 12px; }
+.sankey-column-head {
+  fill: #414b44;
+  font: 700 12px "Segoe UI", Arial, sans-serif;
+  letter-spacing: .08em;
+}
+.sankey-ribbon { opacity: .36; }
+.sankey-ribbon:hover, .sankey-ribbon:focus-visible { opacity: .8; }
+.sankey-label { fill: #202622; font: 600 14px "Segoe UI", Arial, sans-serif; }
+.sankey-amount { fill: #56615a; font-size: 12px; font-weight: 500; }
+.sankey-fund-name { font: 700 15px "Segoe UI", Arial, sans-serif; }
+.sankey-fund-value { fill: #e0e7e1; font: 500 11px "Segoe UI", Arial, sans-serif; }
+g[data-spending-root]:hover .sankey-label,
+g[data-spending-root]:focus-visible .sankey-label { fill: #204e40; }
+g[data-spending-root]:hover rect,
+g[data-spending-root]:focus-visible rect { filter: none; fill: #204e40; }
+
+.sankey-adjustment {
+  gap: 6px 20px;
+  margin: 0 0 8px;
+  padding: 10px 0 10px 13px;
+  border: 0;
+  border-left: 3px solid #a44836;
+  border-bottom: 1px solid #d2d8d2;
+  border-radius: 0;
+  background: transparent;
+}
+.sankey-adjustment-intro strong {
+  color: #202622;
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.sankey-adjustment-intro span,
+.sankey-adjustment-math > span,
+.sankey-adjustment-entry { color: #59645c; font-size: 11px; }
+.sankey-adjustment-math strong { color: #202622; font-size: clamp(15px, 1.5vw, 19px); }
+.sankey-adjustment-math > span + span { border-color: #cbd3cb; }
+.sankey-adjustment-math > span:nth-child(2) strong,
+.sankey-adjustment-entry > strong { color: #974430; }
+.sankey-adjustment-prior { color: #4e5b52; }
+
+.zoom-chart .drill-head h2 {
+  font: 700 clamp(26px, 3vw, 38px)/1.12 "Segoe UI", Arial, sans-serif;
+  letter-spacing: -.04em;
+  min-height: 2.2em;
+}
+.zoom-chart .drill-head > span { color: #5b665e; font-size: 12px; letter-spacing: 0; text-transform: none; }
+.zoom-chart .drill-breadcrumb { border-color: #d4dad4; margin: 13px 0 16px; }
+.zoom-chart .drill-breadcrumb button { color: #315547; font-size: 12px; }
+.zoom-chart .drill-breadcrumb button:first-child { background: #fff; box-shadow: 8px 0 0 #fff; }
+.zoom-chart .drill-breadcrumb button:last-child {
+  padding: 7px 2px;
+  border-radius: 0;
+  background: transparent;
+  color: #202622;
+  font-weight: 700;
+  text-decoration: underline;
+}
+.zoom-chart .drill-total {
+  padding: 12px 0;
+  border-color: #b9c2ba;
+  background: transparent;
+}
+.zoom-chart .drill-total > span { color: #4e5a51; font-size: 12px; letter-spacing: 0; text-transform: none; }
+.zoom-chart .drill-total > strong { color: #202622; font-variant-numeric: tabular-nums; }
+.zoom-chart .drill-total > small { color: #58665b; font-size: 12px; }
+
+.branch-flow { gap: 24px; }
+.branch-flow:has(> .branch-column:nth-child(2):last-child) { gap: 24px; }
+.branch-column + .branch-column::before {
+  content: '';
+  top: 0;
+  bottom: 0;
+  left: -12px;
+  width: 1px;
+  background: #d4dad4;
+}
+.branch-column-head { border-bottom: 2px solid #626d64; }
+.branch-column-head > span { color: #202622; letter-spacing: 0; }
+.branch-column-head > span strong { font-size: 14px; font-weight: 700; }
+.branch-column-head > span small { color: #69746a; font-size: 11px; font-weight: 500; letter-spacing: 0; }
+.branch-column-head p { color: #59665c; font-size: 12px; }
+.branch-column ul { scrollbar-color: #afb9ae #f0f2ee; }
+.branch-column li + li { margin-top: 0; }
+.branch-item,
+.branch-item.is-muted {
+  border: 0;
+  border-bottom: 1px solid #d8ddd7;
+  border-radius: 0;
+  background: transparent;
+  color: #28352b;
+}
+.branch-item:hover, .branch-item:focus-visible,
+.branch-item.is-muted:hover, .branch-item.is-muted:focus-visible {
+  border-color: #aab6ab;
+  background: #f3f5f1;
+  color: #202622;
+}
+.branch-item.is-selected {
+  border: 0;
+  border-left: 3px solid #29392f;
+  border-bottom: 1px solid #bcc9bd;
+  background: #eef2ed;
+  color: #202622;
+}
+.branch-item.is-selected .branch-name small,
+.branch-item.is-selected .branch-row strong small,
+.branch-item.is-selected .branch-compare { color: #546257; }
+.branch-item.is-muted { color: #69766b; }
+.branch-item.is-muted .branch-name small,
+.branch-item.is-muted .branch-row strong small,
+.branch-item.is-muted .branch-compare { color: #758178; }
+.branch-bar {
+  inset: auto auto 0 0;
+  z-index: 0;
+  height: 3px;
+  background: #9eada0;
+}
+.branch-item.is-muted .branch-bar { background: #d1d9d0; }
+.branch-row { position: relative; padding: 10px 9px 4px; }
+.branch-name { font-size: 13px; font-weight: 650; }
+.branch-row strong { font-variant-numeric: tabular-nums; }
+.branch-arrow, .branch-item.is-selected .branch-arrow { color: #586a5c; }
+.branch-compare { position: relative; padding: 0 9px 10px; color: #586a5c; font-weight: 500; }
+.zoom-workspace .related-card,
+.branch-payees .related-card {
+  padding: 14px 0;
+  border: 0;
+  border-top: 1px solid #bcc7bd;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.related-card h3 { font: 700 18px/1.25 "Segoe UI", Arial, sans-serif; }
+.info-tip summary { border-color: #a5b0a6; color: #315547; }
+.info-tip[open] summary { background: #26332c; }
+
+@media (max-width: 760px) {
+  main { padding: 0 16px 24px; }
+  .chart-intro { padding: 18px 0 14px; }
+  .chart-intro h1 { font-size: 32px; }
+  .chart-intro .source-meta { margin-top: 11px; }
+  .chart-toolbar { margin-bottom: 8px; }
+  .sankey-mobile-nav button {
+    border-color: #aab4ab;
+    border-radius: 0;
+    background: #fff;
+    color: #254f42;
+  }
+  .sankey-scroll-hint { color: #59665c; font-weight: 500; }
+  .zoom-chart .drill-head h2 { font-size: clamp(25px, 5vw, 32px); }
+}
+
+@media (max-width: 600px) {
+  .branch-column { padding: 0; }
+  .branch-column + .branch-column { margin-top: 16px; }
+  .branch-column + .branch-column::before {
+    content: '↓';
+    top: -20px;
+    bottom: auto;
+    left: 50%;
+    width: auto;
+    background: transparent;
+    color: #657267;
+    font-size: 14px;
+  }
+  .branch-column.is-ancestor li + li { margin: 0; }
+  .branch-row { padding: 9px 8px 4px; }
+  .branch-compare { padding: 0 8px 10px; }
+  .branch-name { font-size: 12px; }
+  .sankey-adjustment { padding-left: 10px; }
+}

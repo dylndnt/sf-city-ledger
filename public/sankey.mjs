@@ -175,6 +175,7 @@ function adjustmentReconciliation(graph, previousGraph, side) {
   const adjustment = sum(links.map(link => link.cents));
   const total = graph.totals[side];
   const label = side === 'revenue' ? 'revenue' : 'spending';
+  const title = side === 'revenue' ? 'Revenue adjustment' : 'Spending adjustment';
   const signedMoney = cents => cents < 0 ? `−${money(Math.abs(cents))}` : money(cents);
   const entries = links.map(link => {
     const prior = previousGraph?.reverseLinks.find(item => item.side === link.side
@@ -185,7 +186,7 @@ function adjustmentReconciliation(graph, previousGraph, side) {
     return `<div class="sankey-adjustment-entry"><strong tabindex="0" aria-label="${escapeHtml(`Signed adjustment: ${exactMoney(link.cents)}`)}" title="${escapeHtml(exactMoney(link.cents))}">${escapeHtml(signedMoney(link.cents))}</strong><span>${escapeHtml(route)}</span>${comparison}</div>`;
   }).join('');
   return `<section class="sankey-adjustment" aria-label="${escapeHtml(label)} adjustment reconciliation">
-    <div class="sankey-adjustment-intro"><strong>${escapeHtml(label)} adjustment</strong><span>Negative accounting entries lower the recorded ${escapeHtml(label)} total.</span></div>
+    <div class="sankey-adjustment-intro"><strong>${title}</strong><span>Negative accounting entries lower the recorded ${escapeHtml(label)} total.</span></div>
     <div class="sankey-adjustment-math"><span>Positive ${escapeHtml(label)} <strong tabindex="0" aria-label="${escapeHtml(`Positive ${label}: ${exactMoney(positive)}`)}" title="${escapeHtml(exactMoney(positive))}">${escapeHtml(money(positive))}</strong></span><span>Signed adjustment <strong tabindex="0" aria-label="${escapeHtml(`Signed adjustment: ${exactMoney(adjustment)}`)}" title="${escapeHtml(exactMoney(adjustment))}">${escapeHtml(signedMoney(adjustment))}</strong></span><span>Recorded ${escapeHtml(label)} <strong tabindex="0" aria-label="${escapeHtml(`Recorded ${label}: ${exactMoney(total)}`)}" title="${escapeHtml(exactMoney(total))}">${escapeHtml(money(total))}</strong></span></div>
     ${entries}</section>`;
 }
@@ -193,35 +194,33 @@ function adjustmentReconciliation(graph, previousGraph, side) {
 export function renderSankey(data, group = 'All city funds', fundCode = '', previousData = null) {
   const graph = buildSankey(data, group, fundCode), layout = layoutSankey(graph);
   const previousGraph = previousData ? { ...buildSankey(previousData, group, fundCode), fiscalYear: previousData.fiscalYear } : null;
-  const sourceColors = ['#438c86', '#6a9e9a', '#86aaa0', '#a8aea0', '#be9573'];
-  const fundColors = ['#b56c55', '#398278', '#698d9a', '#aa9464'];
+  const sourceColors = ['#71837b', '#8b9991', '#a7b0a7', '#6d7c75', '#959f94'];
+  const fundColor = '#697b73';
   const revenuePaths = layout.revenueLinks.map(link => {
     const color = sourceColors[graph.sources.findIndex(node => node.id === link.source) % sourceColors.length];
     const route = `${link.source} → ${link.target}`;
     return `<path class="sankey-ribbon" d="${ribbon(link)}" fill="${color}" data-flow="true" data-amount="${escapeHtml(exactMoney(link.cents))}" data-route="${escapeHtml(route)}" tabindex="0" aria-label="${escapeHtml(`${route}: ${exactMoney(link.cents)}`)}"/>`;
   }).join('');
   const spendingPaths = layout.spendingLinks.map(link => {
-    const color = fundColors[graph.funds.findIndex(node => node.id === link.source) % fundColors.length];
     const use = graph.uses.find(node => node.id === link.target);
     const route = `${link.source} → ${use.label}`;
-    return `<path class="sankey-ribbon" d="${ribbon(link)}" fill="${color}" data-flow="true" data-spending-root="${escapeHtml(link.target)}" data-amount="${escapeHtml(exactMoney(link.cents))}" data-route="${escapeHtml(route)}" tabindex="0" role="button" aria-label="${escapeHtml(`Open ${use.label}: ${exactMoney(link.cents)}`)}"/>`;
+    return `<path class="sankey-ribbon" d="${ribbon(link)}" fill="${fundColor}" data-flow="true" data-spending-root="${escapeHtml(link.target)}" data-amount="${escapeHtml(exactMoney(link.cents))}" data-route="${escapeHtml(route)}" tabindex="0" role="button" aria-label="${escapeHtml(`Open ${use.label}: ${exactMoney(link.cents)}`)}"/>`;
   }).join('');
   const sourceNodes = layout.sources.map((node, index) => `<g data-node="source">
-    <rect x="${node.x}" y="${node.portY}" width="10" height="${Math.max(1, node.flowHeight)}" rx="2" fill="${sourceColors[index % sourceColors.length]}"/>
+    <rect x="${node.x}" y="${node.portY}" width="10" height="${Math.max(1, node.flowHeight)}" fill="${sourceColors[index % sourceColors.length]}"/>
     ${nodeLabel(node, node.x - 15, 'end', 23, node.cents)}</g>`).join('');
-  const fundNodes = layout.funds.map((node, index) => `<g data-node="fund">
-    <rect x="${node.x}" y="${node.y}" width="230" height="${node.height}" rx="7" fill="#173e43"/>
-    <rect x="${node.x}" y="${node.y}" width="5" height="${node.height}" rx="2" fill="${fundColors[index % fundColors.length]}"/>
+  const fundNodes = layout.funds.map(node => `<g data-node="fund">
+    <rect x="${node.x}" y="${node.y}" width="230" height="${node.height}" rx="2" fill="#28332e"/>
     <text x="${node.x + 18}" y="${node.y + 23}" class="sankey-fund-name">${escapeHtml(node.label)}</text>
     <text x="${node.x + 18}" y="${node.y + 43}" class="sankey-fund-value">In ${escapeHtml(money(node.revenueCents))} <tspan dx="8">Out ${escapeHtml(money(node.spendingCents))}</tspan></text>
     <title>${escapeHtml(node.label)}: recorded revenue ${exactMoney(node.revenueCents)}; recorded spending ${exactMoney(node.spendingCents)}</title>
     </g>`).join('');
   const useNodes = layout.uses.map(node => `<g data-node="use" data-spending-root="${escapeHtml(node.id)}" role="button" tabindex="0" aria-label="${escapeHtml(`Open ${node.label}: ${exactMoney(node.cents)}`)}">
-    <rect x="${node.x}" y="${node.portY}" width="10" height="${Math.max(1, node.flowHeight)}" rx="2" fill="#bd765d"/>
+    <rect x="${node.x}" y="${node.portY}" width="10" height="${Math.max(1, node.flowHeight)}" fill="#697b73"/>
     ${nodeLabel(node, node.x + 17, 'start', 26, node.cents)}</g>`).join('');
   const adjustments = adjustmentReconciliation(graph, previousGraph, 'revenue')
     + adjustmentReconciliation(graph, previousGraph, 'spending');
-  return `<figure class="sankey-figure"><div class="sankey-mobile-nav"><span>Explore the flow</span><button type="button" data-jump-spending>Jump to spending areas →</button></div>${adjustments}<p class="sankey-scroll-hint">Swipe to see funds and spending →</p><div class="sankey-scroll" role="region" aria-label="Fund Sankey diagram; scroll horizontally on small screens" tabindex="0">
+  return `<figure class="sankey-figure"><div class="sankey-mobile-nav"><span>Fund flows</span><button type="button" data-jump-spending>Jump to spending areas →</button></div>${adjustments}<p class="sankey-scroll-hint">Swipe to see funds and spending →</p><div class="sankey-scroll" role="region" aria-label="Fund Sankey diagram; scroll horizontally on small screens" tabindex="0">
     <svg viewBox="0 0 1200 610" role="group" aria-labelledby="sankey-title sankey-description" xmlns="http://www.w3.org/2000/svg">
       <title id="sankey-title">FY2025 fund Sankey: revenue, city funds, and spending</title>
       <desc id="sankey-description">Revenue categories feed fund groups in the middle. Separate ribbons go from those funds to spending areas. Negative accounting entries are reconciled above the diagram. The two sides are independent accounting actuals.</desc>
