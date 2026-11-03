@@ -51,11 +51,29 @@ test('layout still fits when one spending area dominates', () => {
   assert.ok(Math.max(...layout.uses.map(node => node.y + node.height)) <= 580);
 });
 
+test('negative revenue is reconciled as an accounting entry with prior-year context', () => {
+  const prior = structuredClone(fixture);
+  prior.fiscalYear = '2024';
+  prior.funds[0].revenueGroups['Financing, transfers and recoveries'] = -3000;
+  const html = renderSankey(fixture, 'All city funds', '', prior);
+  assert.match(html, /Positive revenue/);
+  assert.match(html, /Recorded revenue/);
+  assert.match(html, /\$190\.00/);
+  assert.match(html, /\$170\.00/);
+  assert.match(html, /General Fund/);
+  assert.match(html, /Financing, transfers and recoveries/);
+  assert.match(html, /−\$20\.00/);
+  assert.match(html, /FY2024[^<]*−\$30\.00/);
+  assert.match(html, /\$10\.00 smaller reduction/);
+  assert.doesNotMatch(html, /class="sankey-reverse"/);
+  assert.doesNotMatch(renderSankey(fixture, 'Enterprise Funds'), /class="sankey-adjustment"/);
+});
+
 test('every flow exposes an exact amount for hover and keyboard focus', () => {
   const html = renderSankey(fixture);
-  const paths = [...html.matchAll(/<path[^>]*class="sankey-(?:ribbon|reverse)"[^>]*>/g)]
+  const paths = [...html.matchAll(/<path[^>]*class="sankey-ribbon"[^>]*>/g)]
     .map(match => match[0]);
-  assert.equal(paths.length, 5);
+  assert.equal(paths.length, 4);
   for (const path of paths) {
     assert.match(path, /data-flow=/);
     assert.match(path, /data-amount=/);
@@ -63,11 +81,11 @@ test('every flow exposes an exact amount for hover and keyboard focus', () => {
     assert.match(path, /tabindex="0"/);
   }
   assert.match(html, /data-amount="\$100\.00"/);
-  assert.match(html, /data-amount="−\$20\.00"/);
+  assert.match(html, /Signed adjustment <strong[^>]*>−\$20\.00/);
   assert.match(html, /class="flow-tooltip"[^>]*hidden/);
 });
 
-test('real FY2025 snapshot renders all nodes and one visible reverse adjustment', () => {
+test('real FY2025 snapshot renders all nodes and one signed reconciliation', () => {
   const data = JSON.parse(readFileSync(new URL('../public/data/fy2025.json', import.meta.url)));
   const graph = buildSankey(data);
   assert.equal(graph.sources.length, 5);
@@ -84,11 +102,14 @@ test('real FY2025 snapshot renders all nodes and one visible reverse adjustment'
   assert.equal(graph.spendingLinks.reduce((n, link) => n + link.cents, 0)
     + graph.reverseLinks.filter(link => link.side === 'spending').reduce((n, link) => n + link.cents, 0),
   graph.totals.spending);
-  const html = renderSankey(data);
+  const prior = JSON.parse(readFileSync(new URL('../public/data/fy2024.json', import.meta.url)));
+  const html = renderSankey(data, 'All city funds', '', prior);
   assert.match(html, /<svg[^>]*role="group"/);
   assert.match(html, /<title[^>]*>FY2025 fund Sankey/);
-  assert.match(html, /data-reverse="true"/);
+  assert.match(html, /class="sankey-adjustment"/);
   assert.match(html, /−\$1\.05B/);
+  assert.match(html, /FY2024 −\$1\.13B/);
+  assert.match(html, /\$75\.56M smaller reduction/);
   assert.match(html, /Public Works, Transportation/);
 });
 

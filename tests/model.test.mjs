@@ -35,7 +35,7 @@ test('markup names the selected fund and preserves negative signs', () => {
   assert.match(html, /-\$20/);
   assert.match(html, /Public Protection/);
   assert.match(html, /Data as of/);
-  assert.match(html, /reverse adjustment/);
+  assert.match(html, /Signed adjustment/);
   assert.doesNotMatch(html, /surplus|deficit/i);
 });
 

@@ -107,9 +107,6 @@ export function layoutSankey(graph) {
     ...fund, flowCents: Math.max(fund.inboundCents, fund.outboundCents),
   })), 'flowCents', 490, 60, 22, scale);
   const uses = positionColumn(graph.uses, 'flowCents', 950, 54, 12, scale);
-  const sourceById = new Map(sources.map(node => [node.id, node]));
-  const fundById = new Map(funds.map(node => [node.id, node]));
-  const useById = new Map(uses.map(node => [node.id, node]));
   const sourceOffset = new Map(), fundInboundOffset = new Map();
   const fundOutboundOffset = new Map(), useOffset = new Map();
   const revenueLinks = [];
@@ -140,8 +137,7 @@ export function layoutSankey(graph) {
       useOffset.set(use.id, (useOffset.get(use.id) ?? 0) + thickness);
     }
   }
-  return { sources, funds, uses, revenueLinks, spendingLinks, reverseLinks: graph.reverseLinks,
-    sourceById, fundById, useById, scale };
+  return { sources, funds, uses, revenueLinks, spendingLinks, scale };
 }
 
 function ribbon(link) {
@@ -172,8 +168,31 @@ function nodeLabel(node, x, anchor, maxLength, amount) {
     <tspan x="${x}" dy="17" class="sankey-amount">${escapeHtml(money(amount))}</tspan></text>`;
 }
 
-export function renderSankey(data, group = 'All city funds', fundCode = '') {
+function adjustmentReconciliation(graph, previousGraph, side) {
+  const links = graph.reverseLinks.filter(link => link.side === side);
+  if (!links.length) return '';
+  const positive = sum(graph[side === 'revenue' ? 'revenueLinks' : 'spendingLinks'].map(link => link.cents));
+  const adjustment = sum(links.map(link => link.cents));
+  const total = graph.totals[side];
+  const label = side === 'revenue' ? 'revenue' : 'spending';
+  const signedMoney = cents => cents < 0 ? `−${money(Math.abs(cents))}` : money(cents);
+  const entries = links.map(link => {
+    const prior = previousGraph?.reverseLinks.find(item => item.side === link.side
+      && item.source === link.source && item.target === link.target);
+    const change = prior ? Math.abs(link.cents) - Math.abs(prior.cents) : 0;
+    const comparison = prior ? `<span class="sankey-adjustment-prior" title="FY${escapeHtml(previousGraph.fiscalYear)} ${escapeHtml(exactMoney(prior.cents))}">FY${escapeHtml(previousGraph.fiscalYear)} ${escapeHtml(signedMoney(prior.cents))} · ${change === 0 ? 'no change' : `${escapeHtml(money(Math.abs(change)))} ${change < 0 ? 'smaller' : 'larger'} ${side === 'revenue' ? 'reduction' : 'offset'}`}</span>` : '';
+    const route = side === 'revenue' ? `${link.source} · ${link.target}` : `${link.target} · ${link.source}`;
+    return `<div class="sankey-adjustment-entry"><strong tabindex="0" aria-label="${escapeHtml(`Signed adjustment: ${exactMoney(link.cents)}`)}" title="${escapeHtml(exactMoney(link.cents))}">${escapeHtml(signedMoney(link.cents))}</strong><span>${escapeHtml(route)}</span>${comparison}</div>`;
+  }).join('');
+  return `<section class="sankey-adjustment" aria-label="${escapeHtml(label)} adjustment reconciliation">
+    <div class="sankey-adjustment-intro"><strong>${escapeHtml(label)} adjustment</strong><span>Negative accounting entries lower the recorded ${escapeHtml(label)} total.</span></div>
+    <div class="sankey-adjustment-math"><span>Positive ${escapeHtml(label)} <strong tabindex="0" aria-label="${escapeHtml(`Positive ${label}: ${exactMoney(positive)}`)}" title="${escapeHtml(exactMoney(positive))}">${escapeHtml(money(positive))}</strong></span><span>Signed adjustment <strong tabindex="0" aria-label="${escapeHtml(`Signed adjustment: ${exactMoney(adjustment)}`)}" title="${escapeHtml(exactMoney(adjustment))}">${escapeHtml(signedMoney(adjustment))}</strong></span><span>Recorded ${escapeHtml(label)} <strong tabindex="0" aria-label="${escapeHtml(`Recorded ${label}: ${exactMoney(total)}`)}" title="${escapeHtml(exactMoney(total))}">${escapeHtml(money(total))}</strong></span></div>
+    ${entries}</section>`;
+}
+
+export function renderSankey(data, group = 'All city funds', fundCode = '', previousData = null) {
   const graph = buildSankey(data, group, fundCode), layout = layoutSankey(graph);
+  const previousGraph = previousData ? { ...buildSankey(previousData, group, fundCode), fiscalYear: previousData.fiscalYear } : null;
   const sourceColors = ['#438c86', '#6a9e9a', '#86aaa0', '#a8aea0', '#be9573'];
   const fundColors = ['#b56c55', '#398278', '#698d9a', '#aa9464'];
   const revenuePaths = layout.revenueLinks.map(link => {
@@ -200,31 +219,17 @@ export function renderSankey(data, group = 'All city funds', fundCode = '') {
   const useNodes = layout.uses.map(node => `<g data-node="use" data-spending-root="${escapeHtml(node.id)}" role="button" tabindex="0" aria-label="${escapeHtml(`Open ${node.label}: ${exactMoney(node.cents)}`)}">
     <rect x="${node.x}" y="${node.portY}" width="10" height="${Math.max(1, node.flowHeight)}" rx="2" fill="#bd765d"/>
     ${nodeLabel(node, node.x + 17, 'start', 26, node.cents)}</g>`).join('');
-  const reverse = layout.reverseLinks.map((link, index) => {
-    const from = link.side === 'revenue' ? layout.fundById.get(link.source) : layout.useById.get(link.source);
-    const to = link.side === 'revenue' ? layout.sourceById.get(link.target) : layout.fundById.get(link.target);
-    if (!from || !to) throw new Error('reverse link endpoint missing');
-    const fromX = link.side === 'revenue' ? from.x - 3 : from.x + 12;
-    const toX = link.side === 'revenue' ? to.x + 12 : to.x + 230;
-    const lane = 615 + index * 28;
-    const path = `M ${fromX} ${from.y + from.height} Q ${fromX - 10} ${lane} ${fromX - 55} ${lane} L ${toX + 55} ${lane} Q ${toX} ${lane} ${toX} ${to.y + to.height}`;
-    const amount = `−${money(Math.abs(link.cents))}`;
-    const route = `${link.source} → ${link.target} · reverse adjustment`;
-    return `<g data-reverse="true"><path d="${path}" class="sankey-reverse" marker-end="url(#reverse-arrow)" data-flow="true" data-amount="${escapeHtml(`−${exactMoney(Math.abs(link.cents))}`)}" data-route="${escapeHtml(route)}" tabindex="0" aria-label="${escapeHtml(`${route}: ${exactMoney(link.cents)}`)}"/>
-      <text x="350" y="${lane - 8}" text-anchor="middle" class="sankey-reverse-label">${escapeHtml(amount)} reverse adjustment</text></g>`;
-  }).join('');
-  const height = Math.max(670, 645 + layout.reverseLinks.length * 28);
-  return `<figure class="sankey-figure"><div class="sankey-mobile-nav"><span>Explore the flow</span><button type="button" data-jump-spending>Jump to spending areas →</button></div><p class="sankey-scroll-hint">Swipe to see funds and spending →</p><div class="sankey-scroll" role="region" aria-label="Fund Sankey diagram; scroll horizontally on small screens" tabindex="0">
-    <svg viewBox="0 0 1200 ${height}" role="group" aria-labelledby="sankey-title sankey-description" xmlns="http://www.w3.org/2000/svg">
+  const adjustments = adjustmentReconciliation(graph, previousGraph, 'revenue')
+    + adjustmentReconciliation(graph, previousGraph, 'spending');
+  return `<figure class="sankey-figure"><div class="sankey-mobile-nav"><span>Explore the flow</span><button type="button" data-jump-spending>Jump to spending areas →</button></div>${adjustments}<p class="sankey-scroll-hint">Swipe to see funds and spending →</p><div class="sankey-scroll" role="region" aria-label="Fund Sankey diagram; scroll horizontally on small screens" tabindex="0">
+    <svg viewBox="0 0 1200 610" role="group" aria-labelledby="sankey-title sankey-description" xmlns="http://www.w3.org/2000/svg">
       <title id="sankey-title">FY2025 fund Sankey: revenue, city funds, and spending</title>
-      <desc id="sankey-description">Five revenue categories feed four fund groups in the middle. Separate ribbons go from those funds to seven spending areas. A red reverse link shows a negative General Fund adjustment. The two sides are independent accounting actuals.</desc>
-      <defs><marker id="reverse-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 Z" fill="#b85c45"/></marker></defs>
+      <desc id="sankey-description">Revenue categories feed fund groups in the middle. Separate ribbons go from those funds to spending areas. Negative accounting entries are reconciled above the diagram. The two sides are independent accounting actuals.</desc>
       <text x="0" y="34" class="sankey-column-head">REVENUE SOURCES</text>
       <text x="490" y="34" class="sankey-column-head">CITY FUNDS</text>
       <text x="950" y="34" class="sankey-column-head">SPENDING AREAS</text>
       <g class="sankey-links">${revenuePaths}${spendingPaths}</g>
       <g class="sankey-nodes">${sourceNodes}${fundNodes}${useNodes}</g>
-      ${reverse}
     </svg></div><div class="flow-tooltip" aria-hidden="true" hidden><strong data-tooltip-amount></strong><span data-tooltip-route></span></div>
-    <figcaption>Hover over or focus a ribbon for its exact amount. Ribbon width shows the recorded amount; the red reverse link is a negative adjustment. Revenue into funds and spending out of funds are separate accounting views. On narrow screens, scroll to see the whole diagram.</figcaption></figure>`;
+    <figcaption>Hover over or focus a ribbon for its exact amount. Ribbon width shows positive recorded amounts; signed adjustments above reconcile the totals. Revenue into funds and spending out of funds are separate accounting views. On narrow screens, scroll to see the whole diagram.</figcaption></figure>`;
 }
