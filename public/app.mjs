@@ -48,6 +48,13 @@ const reuseBranchColumns = next => {
       }
       oldButton.querySelector('.branch-arrow').textContent = newButton.querySelector('.branch-arrow').textContent;
     }
+    const oldHeader = existing.querySelector('.branch-column-head');
+    const newHeader = incoming.querySelector('.branch-column-head');
+    for (const selector of ['strong', 'small', 'p']) {
+      const before = oldHeader.querySelector(selector);
+      const after = newHeader.querySelector(selector);
+      if (before && after) before.textContent = after.textContent;
+    }
     const keepAnimation = existing.classList.contains('is-animated') && incoming.classList.contains('is-entering');
     existing.className = incoming.className + (keepAnimation && !incoming.classList.contains('is-animated') ? ' is-animated' : '');
     incoming.replaceWith(existing);
@@ -90,7 +97,7 @@ const easeBranchMovement = previous => {
     column.animate([
       { transform: `translate(${dx}px, ${dy}px)` },
       { transform: 'translate(0, 0)' },
-    ], { duration: 240, easing: 'cubic-bezier(.2,.7,.2,1)' });
+    ], { duration: 180, easing: 'cubic-bezier(.2,.7,.2,1)' });
   }
 };
 const keepPathVisible = () => {
@@ -99,6 +106,7 @@ const keepPathVisible = () => {
   path.scrollLeft = path.scrollWidth - path.clientWidth;
 };
 const updateDrilldown = (current, incoming) => {
+  current.className = incoming.className;
   for (const selector of ['.drill-head .step', '.drill-head h2', '.drill-head>span',
     '.drill-total>span', '.drill-total>strong', '.drill-total>small']) {
     current.querySelector(selector).textContent = incoming.querySelector(selector).textContent;
@@ -107,7 +115,9 @@ const updateDrilldown = (current, incoming) => {
   const pathScroll = path.scrollLeft;
   path.replaceChildren(...incoming.querySelector('.drill-breadcrumb').childNodes);
   path.scrollLeft = pathScroll;
-  current.querySelector('.branch-flow').replaceChildren(...incoming.querySelector('.branch-flow').childNodes);
+  const flow = current.querySelector('.branch-flow');
+  flow.className = incoming.querySelector('.branch-flow').className;
+  flow.replaceChildren(...incoming.querySelector('.branch-flow').childNodes);
   const related = current.querySelector('.related-grid');
   const nextRelated = incoming.querySelector('.related-grid');
   if (related && nextRelated) related.replaceWith(nextRelated);
@@ -249,7 +259,6 @@ const loadPriorVendor = async () => {
 
 const choosePath = path => {
   const previous = explorer;
-  const enteringChart = previous.path.length === 0;
   resetExplorer(path);
   explorer.animate = true;
   if (path[1] && path[1] === previous.path[1] && previous.outcomeStatus === 'ready') {
@@ -257,8 +266,6 @@ const choosePath = path => {
     explorer.outcomeStatus = 'ready';
   }
   draw();
-  if (enteringChart) root.querySelector('#spending-drilldown')?.scrollIntoView({ block: 'start',
-    behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
   root.querySelector('#drill-heading')?.focus({ preventScroll: true });
   if (explorer.outcomeStatus !== 'ready') loadOutcomes();
   loadVendors();
