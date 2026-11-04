@@ -1,4 +1,6 @@
-# Spending-first City Ledger implementation plan
+# City Ledger implementation plan
+
+**2026-11-03 revision:** Restore the original revenue → funds → spending chart as the opening view. Selecting a spending area opens the redesigned classification explorer in the same chart frame. The `All spending` breadcrumb returns to the opening chart. The tasks below record the preceding design pass.
 
 **Goal:** Make the spending hierarchy the opening chart and apply one coherent design system from labels through interaction states.
 

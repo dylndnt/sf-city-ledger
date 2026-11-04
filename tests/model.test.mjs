@@ -51,12 +51,12 @@ test('source labels are escaped before insertion into the page', () => {
   assert.match(html, /&lt;img/);
 });
 
-test('spending areas are the opening chart and fund flows are secondary', () => {
+test('the original money flow is the opening chart', () => {
   const html = render(data);
-  assert.ok(html.indexOf('id="spending-drilldown"') > 0);
-  assert.ok(html.indexOf('id="spending-drilldown"') < html.indexOf('class="sankey-figure"'));
-  assert.match(html, /<summary>Revenue and fund context<\/summary>/);
-  assert.match(html, /\$120/);
+  assert.match(html, /class="chart-stage"[^>]*><figure class="sankey-figure"/);
+  assert.doesNotMatch(html, /id="spending-drilldown"/);
+  assert.doesNotMatch(html, /accounting-context/);
+  assert.match(html, /SPENDING AREAS/);
   assert.match(html, /Data as of/);
 });
 
@@ -68,11 +68,11 @@ test('accounting context is available from a compact chart disclosure', () => {
   assert.doesNotMatch(html, /class="scope-note"/);
 });
 
-test('the opening chart is the entry point and selection zooms in place', () => {
+test('selecting a spending area from the opening flow reveals its drilldown', () => {
   const snapshot = JSON.parse(readFileSync(new URL('../public/data/fy2025.json', import.meta.url)));
   const opening = render(snapshot, 'All city funds', '', false, { path: [] });
   const focused = render(snapshot, 'All city funds', '', false, { path: ['02'] });
-  assert.match(opening, /data-next-code="02"/);
+  assert.match(opening, /data-spending-root="02"/);
   assert.doesNotMatch(opening, /id="details-panel"/);
   assert.match(focused, /id="spending-drilldown"/);
   assert.match(focused, /data-branch-code="02"/);

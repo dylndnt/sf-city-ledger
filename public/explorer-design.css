@@ -1,4 +1,4 @@
-/* Spending-first visual system; see docs/design/city-ledger-reference-guide.md. */
+/* Ledger visual system; see docs/design/city-ledger-reference-guide.md. */
 :root { font-family:'DM Sans',Arial,sans-serif; color:#153238; background:#f7f5ef; }
 main { max-width:1420px; padding:0 28px 32px; }
 :focus-visible { outline:2px solid #b56c55; outline-offset:2px; }
@@ -27,8 +27,6 @@ main { max-width:1420px; padding:0 28px 32px; }
 .zoom-chart .drill-breadcrumb button { color:#275e56; font-size:12px; }
 .zoom-chart .drill-breadcrumb button:first-child { background:#f7f5ef; }
 .zoom-chart .drill-breadcrumb button:last-child { border-radius:2px; background:#173e43; color:#fffefa; text-decoration:none; }
-.zoom-chart.is-root .drill-head { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
-.zoom-chart.is-root .drill-breadcrumb { display:none; }
 .zoom-chart .drill-total { margin:0 0 16px; padding:12px 0; border:0; border-top:1px solid #aebfae; border-bottom:1px solid #aebfae; background:transparent; }
 .zoom-chart .drill-total>span { color:#536c60; font-size:12px; letter-spacing:0; text-transform:none; }
 .zoom-chart .drill-total>strong { color:#173e43; font-size:clamp(24px,2.8vw,34px); font-variant-numeric:tabular-nums; }
@@ -36,7 +34,6 @@ main { max-width:1420px; padding:0 28px 32px; }
 
 .branch-flow { gap:20px; }
 .branch-flow:has(>.branch-column:nth-child(2):last-child) { gap:20px; }
-.branch-flow.is-root { display:block; }
 .branch-column { padding:0; }
 .branch-column+.branch-column:before { content:''; top:0; bottom:0; left:-10px; width:1px; background:#d2ddd2; }
 .branch-column.is-entering.is-animated { animation-duration:.18s; }
@@ -61,18 +58,6 @@ main { max-width:1420px; padding:0 28px 32px; }
 .branch-arrow,.branch-item.is-selected .branch-arrow { color:#a55e47; }
 .branch-compare { position:relative; padding:0 9px 10px; color:#506d5e; font-size:12px; font-weight:500; }
 .branch-rank { display:none; color:#7b9283; font-size:12px; font-variant-numeric:tabular-nums; }
-.branch-flow.is-root .branch-column-head { min-height:0; padding:7px 0; }
-.branch-flow.is-root .branch-column-head p { display:none; }
-.branch-flow.is-root .branch-column ul { max-height:none; overflow:visible; }
-.branch-flow.is-root .branch-column li { position:relative; }
-.branch-flow.is-root .branch-item { min-height:78px; }
-.branch-flow.is-root .branch-row { grid-template-columns:34px minmax(0,1fr) auto 18px; gap:12px; padding:12px 12px 3px; }
-.branch-flow.is-root .branch-rank { display:block; }
-.branch-flow.is-root .branch-name { font-size:15px; }
-.branch-flow.is-root .branch-row strong { font-size:16px; }
-.branch-flow.is-root .branch-compare { padding:0 12px 13px 58px; font-size:12px; }
-.branch-flow.is-root .branch-bar { height:4px; background:#c5ddcc; }
-.branch-flow.is-root .branch-item:hover { background:#eef4ed; }
 
 .zoom-workspace .related-card,.branch-payees .related-card { padding:14px 0; border:0; border-top:1px solid #bbd0bf; border-radius:0; background:transparent; box-shadow:none; }
 .related-card h3 { font:700 18px/1.25 'DM Sans',Arial,sans-serif; }
@@ -80,15 +65,6 @@ main { max-width:1420px; padding:0 28px 32px; }
 .outcome-list small,.vendor-list small { font-size:12px; }
 .info-tip>div { border-radius:2px; box-shadow:none; font-size:12px; }
 
-.accounting-context { margin:2px 0 28px; border-top:1px solid #cbd4ca; border-bottom:1px solid #cbd4ca; }
-.accounting-context>summary { display:flex; align-items:center; padding:16px 1px; color:#173e43; font-size:14px; font-weight:700; cursor:pointer; list-style:none; }
-.accounting-context>summary::-webkit-details-marker { display:none; }
-.accounting-context>summary::after { content:'+'; margin-left:auto; color:#a45b43; font-size:20px; font-weight:400; }
-.accounting-context[open]>summary::after { content:'−'; }
-.accounting-context-body { padding:0 0 20px; }
-.accounting-context-body>p { max-width:720px; margin:0 0 14px; color:#5b7169; font-size:13px; line-height:1.5; }
-.accounting-context .sankey-figure { box-shadow:none; }
-.accounting-context .sankey-scroll svg { min-width:900px; }
 
 @media(max-width:760px) {
   main { padding:0 15px 24px; }
@@ -99,10 +75,6 @@ main { max-width:1420px; padding:0 28px 32px; }
   .chart-help { margin:0 0 7px; }
   .zoom-chart .drill-head h2 { font-size:clamp(24px,5.5vw,31px); }
   .chart-stage>.zoom-chart { min-height:0; }
-  .branch-flow.is-root .branch-row { grid-template-columns:27px minmax(0,1fr) auto 16px; gap:6px; padding:11px 6px 3px; }
-  .branch-flow.is-root .branch-name { font-size:13px; }
-  .branch-flow.is-root .branch-row strong { font-size:14px; }
-  .branch-flow.is-root .branch-compare { padding:0 6px 13px 39px; }
 }
 @media(max-width:600px) {
   .branch-column { padding:0; }
