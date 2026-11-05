@@ -41,6 +41,8 @@ This guide applies findings from the published guidance and products below. The 
 
 Use `FY2025` and `FY2024` beside compared amounts. Use `Change` for signed arithmetic. Keep source codes visible in smaller text on deep rows. Put methodology and reporting caveats in the existing disclosures, not in persistent warning banners.
 
+For related department measures, keep each title, observation date, and prior value on the left. Place the current value, signed absolute change, and percentage change together on the right, with the changes directly beneath the value. Limit the measure list to a readable column so titles and values remain close. A percentage measure uses percentage points for its absolute change and a relative percentage for its percentage change. If the prior value is zero or absent, say that percentage change is unavailable.
+
 ## Visual rules
 
 Preserve the established palette. Background `#f7f5ef`; paper `#fffefa`; main ink `#153238`; selected teal `#173e43`; rust action/accent `#b56c55`; pale green amount fill `#e0eee3`; structural line `#cbd4ca`; muted text `#5b7169`. Rust is for clickable emphasis and negative adjustment, not a second background color. Color never carries selection alone.

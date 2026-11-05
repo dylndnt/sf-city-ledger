@@ -60,17 +60,23 @@ test('focused chart keeps its parent beside clickable children and a prior-year 
   assert.match(html, /class="branch-compare"/);
 });
 
-test('outcome cards show prior observation and signed change', () => {
+test('outcome rows group the current value with absolute and percentage change', () => {
   const html = renderDrilldown(data, 'All city funds', '', {
-    path: ['02', 'DPW'], outcomeStatus: 'ready', outcomes: [{
-      measure_code: 'A', measure_title: 'Street repairs', actual: '15',
-      calendar_month: '2025-06-30', measure_data_type: 'Number',
-      previous: { actual: '12', calendar_month: '2024-06-30' },
-    }],
+    path: ['02', 'DPW'], outcomeStatus: 'ready', outcomes: [
+      { measure_code: 'A', measure_title: 'Street repairs', actual: '15',
+        calendar_month: '2025-06-30', measure_data_type: 'Number',
+        previous: { actual: '12', calendar_month: '2024-06-30' } },
+      { measure_code: 'B', measure_title: 'On-time repairs', actual: '0.87',
+        calendar_month: '2025-06-30', measure_data_type: 'Percent',
+        previous: { actual: '0.8', calendar_month: '2024-06-30' } },
+      { measure_code: 'C', measure_title: 'New requests', actual: '3',
+        calendar_month: '2025-06-30', measure_data_type: 'Number',
+        previous: { actual: '0', calendar_month: '2024-06-30' } },
+    ],
   }, previous);
-  assert.match(html, /FY2025/);
-  assert.match(html, /FY2024/);
-  assert.match(html, /\+3/);
+  assert.match(html, /class="outcome-values"><strong>15<\/strong><span class="metric-change">Change \+3<\/span><span class="metric-percent">\+25% vs FY2024<\/span>/);
+  assert.match(html, /class="outcome-values"><strong>87%<\/strong><span class="metric-change">Change \+7 pp<\/span><span class="metric-percent">\+8\.8% vs FY2024<\/span>/);
+  assert.match(html, /class="outcome-values"><strong>3<\/strong><span class="metric-change">Change \+3<\/span><span class="metric-percent">Percent change unavailable<\/span>/);
   assert.match(html, /2024-06-30/);
 });
 

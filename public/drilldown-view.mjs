@@ -21,6 +21,15 @@ const metricChange = (current, previous, type) => {
   const formatted = new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(Math.abs(amount));
   return `${amount > 0 ? '+' : amount < 0 ? '−' : ''}${formatted}${type === 'Percent' ? ' pp' : ''}`;
 };
+const metricPercentChange = (current, previous) => {
+  const currentValue = Number(current);
+  const previousValue = Number(previous);
+  if (!Number.isFinite(currentValue) || !Number.isFinite(previousValue) || previousValue === 0) return null;
+  const change = 100 * (currentValue - previousValue) / Math.abs(previousValue);
+  const formatted = new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 })
+    .format(Number(Math.abs(change).toPrecision(12)));
+  return `${change > 0 ? '+' : change < 0 ? '−' : ''}${formatted}%`;
+};
 const infoTip = (label, content) => `<details class="info-tip" data-info-key="${safe(label)}"><summary aria-label="About ${safe(label)}">i</summary><div>${safe(content)}</div></details>`;
 const priorLine = (item, fiscalYear) => item.previous === null ? 'Prior year unavailable' :
   `FY${safe(Number(fiscalYear) - 1)} ${money(item.previous)} · ${item.change >= 0 ? '+' : ''}${money(item.change)} change`;
@@ -82,15 +91,16 @@ function outcomeSection(state, fiscalYear, departmentCode) {
   if (url && state.outcomeStatus === 'loading') content = '<p role="status">Loading department measures…</p>';
   if (url && state.outcomeStatus === 'error') content = '<p role="alert">Department measures are unavailable right now.</p><button type="button" data-retry-outcomes>Retry</button>';
   if (url && state.outcomeStatus === 'ready') content = state.outcomes?.length
-    ? `<ul class="outcome-list">${state.outcomes.map(row => `<li><span>${safe(row.measure_title)}</span>
-        <strong>${metricValue(row.actual, row.measure_data_type)}</strong>
-        <small>FY${safe(fiscalYear)} · observed ${date(row.calendar_month)}</small>
-        <small>FY${safe(Number(fiscalYear) - 1)} · ${row.previous ? `${metricValue(row.previous.actual, row.measure_data_type)} · observed ${date(row.previous.calendar_month)}` : 'No prior observation'}</small>
-        <b class="metric-change">${row.previous ? metricChange(row.actual, row.previous.actual, row.measure_data_type) : 'Change unavailable'}</b>
+    ? `<ul class="outcome-list">${state.outcomes.map(row => {
+      const percentChange = row.previous ? metricPercentChange(row.actual, row.previous.actual) : null;
+      return `<li><span class="outcome-title">${safe(row.measure_title)}</span>
+        <div class="outcome-values"><strong>${metricValue(row.actual, row.measure_data_type)}</strong><span class="metric-change">${row.previous ? `Change ${metricChange(row.actual, row.previous.actual, row.measure_data_type)}` : 'Change unavailable'}</span><span class="metric-percent">${percentChange ? `${percentChange} vs FY${safe(Number(fiscalYear) - 1)}` : 'Percent change unavailable'}</span></div>
+        <div class="outcome-context"><small>FY${safe(fiscalYear)} · observed ${date(row.calendar_month)}</small><small>FY${safe(Number(fiscalYear) - 1)} · ${row.previous ? `${metricValue(row.previous.actual, row.measure_data_type)} · observed ${date(row.previous.calendar_month)}` : 'No prior observation'}</small></div>
         ${row.measure_description || row.measure_methodology ? `<details class="measure-method"><summary>Definition and method</summary>${row.measure_description ? `<p>${safe(row.measure_description)}</p>` : ''}${row.measure_methodology ? `<p>${safe(row.measure_methodology)}</p>` : ''}</details>` : ''}
-      </li>`).join('')}</ul>`
+      </li>`;
+    }).join('')}</ul>`
     : `<p>No measures with an observation date in FY${safe(fiscalYear)} are published for this department.</p>`;
-  return `<section class="related-card" aria-labelledby="outcome-heading"><div class="related-heading"><h3 id="outcome-heading">Related department outcomes</h3>${infoTip('related department outcomes', "These measures describe the department, not the effect of this particular program, sub-object, or vendor payment. Reporting periods vary; check each measure's definition.")}</div>
+  return `<section class="related-card" aria-labelledby="outcome-heading"><div class="related-heading"><h3 id="outcome-heading">Related department outcomes</h3>${infoTip('related department outcomes', "These measures describe the department, not the effect of this particular program, sub-object, or vendor payment. Reporting periods vary; check each measure's definition. Percentage change is relative to the prior value; percent measures show absolute change in percentage points. A zero or missing prior value has no percentage change.")}</div>
     ${content}<a href="https://data.sf.gov/d/kc49-udxn" target="_blank" rel="noopener noreferrer">Scorecard source ↗</a></section>`;
 }
 
