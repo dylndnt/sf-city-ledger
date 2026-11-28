@@ -1,5 +1,7 @@
 # City Ledger design reference guide
 
+The current visual rules are in [City Ledger visual system](elevenlabs-inspired-ledger.md). This document retains the data, interaction, and terminology decisions from the preceding design pass.
+
 ## Purpose and research
 
 The first view is the original money flow chart. It shows revenue sources, city funds, and spending areas together. The visitor can select a spending area to follow it through departments, programs, cost classifications, named payees, and related department measures. Revenue, fund accounting, paid vouchers, and outcomes have different meanings and retain separate labels.
@@ -43,21 +45,9 @@ Use `FY2025` and `FY2024` beside compared amounts. Use `Change` for signed arith
 
 For related department measures, keep each title, observation date, and prior value on the left. Place the current value, signed absolute change, and percentage change together on the right, with the changes directly beneath the value. Limit the measure list to a readable column so titles and values remain close. A percentage measure uses percentage points for its absolute change and a relative percentage for its percentage change. If the prior value is zero or absent, say that percentage change is unavailable.
 
-## Visual rules
+## Visual rules and responsive behavior
 
-Preserve the established palette. Background `#f7f5ef`; paper `#fffefa`; main ink `#153238`; selected teal `#173e43`; rust action/accent `#b56c55`; pale green amount fill `#e0eee3`; structural line `#cbd4ca`; muted text `#5b7169`. Rust is for clickable emphasis and negative adjustment, not a second background color. Color never carries selection alone.
-
-Use one interface type family (`DM Sans`, Arial fallback). Use 34–40 px for the page title, 26–32 px for the selected category, 16 px for column headings, 14 px for row names and body text, 12 px for comparisons and source codes. Use tabular numerals for amounts. Reserve uppercase letterspacing for the small masthead only. Avoid decorative punctuation in the title.
-
-The opening flow chart retains its existing ribbons and color mapping. In the explorer, columns are separated by space and a light vertical line. Rows use a bottom divider. Do not nest bordered cards or shadows. The selected row has a 3 px teal left rule, restrained teal tint, bold label, and `aria-current`. Siblings remain readable at lower emphasis. A thin proportional bar remains visible as a quantitative cue.
-
-Use a square or 2 px radius on controls and disclosures. A border means an interactive control, a data row separator, or a section boundary. Avoid borders around every container. Links are underlined. Focus is a clear outline. The existing Sankey retains its source and fund colors, but stays secondary to the spending task.
-
-## Motion and responsive behavior
-
-The chart frame and header keep their position when the flow becomes the explorer. Existing rows keep their order and DOM where possible. A newly revealed column may fade in over at most 180 ms; layout movement remains brief and functional. Respect `prefers-reduced-motion`.
-
-At 390 px, the flow chart is horizontally scrollable with a direct jump to spending areas. In the explorer, one next-level list fills the width; selected ancestor levels become horizontally scrollable context above it. The path stays one line high and can be scrolled to the active endpoint. No page-wide horizontal overflow. The prior-year line stays attached to its current amount.
+Use [City Ledger visual system](elevenlabs-inspired-ledger.md) for the current type, color, spacing, surface, border, motion, and mobile rules. The opening flow chart retains its ribbon colors. At 390 px it scrolls inside its surface with a direct jump to spending areas; deeper ancestor levels become scrollable context above the next level. The prior-year line stays attached to its current amount.
 
 ## Acceptance review
 

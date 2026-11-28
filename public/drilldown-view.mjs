@@ -42,14 +42,14 @@ function branchColumn(data, previousData, group, fundCode, path, depth, animate 
   const ancestor = depth < path.length;
   const entries = branch.entries;
   const maxAmount = Math.max(1, ...entries.map(item => Math.abs(item.amount)));
-  const rows = entries.map((item, index) => {
+  const rows = entries.map(item => {
     const current = item.code === selectedCode;
     const className = ancestor ? `branch-item ${current ? 'is-selected' : 'is-muted'}` : 'branch-item is-next';
     const action = ancestor
       ? `data-branch-depth="${depth}" data-branch-code="${safe(item.code)}" data-focus-key="${depth}:${safe(item.code)}"${current ? ' aria-current="step"' : ''}`
       : `data-next-code="${safe(item.code)}"`;
     const scale = depth === 0 ? Math.max(1, Math.abs(branch.total)) : maxAmount;
-    return `<li><button type="button" class="${className}" ${action}><span class="branch-bar" style="--flow-width:${Math.max(2, 100 * Math.abs(item.amount) / scale)}%"></span><span class="branch-row">${depth === 0 ? `<span class="branch-rank" aria-hidden="true">${String(index + 1).padStart(2, '0')}</span>` : ''}<span class="branch-name">${safe(item.label)}${depth === 0 ? '' : `<small title="${safe(item.code)}">${safe(item.code)}</small>`}</span><strong>${money(item.amount)}<small>${share(item.amount, branch.total)}</small></strong><span class="branch-arrow" aria-hidden="true">${current ? '●' : '→'}</span></span><span class="branch-compare">${priorLine(item, data.fiscalYear)}</span></button></li>`;
+    return `<li><button type="button" class="${className}" ${action}><span class="branch-bar" style="--flow-width:${Math.max(2, 100 * Math.abs(item.amount) / scale)}%"></span><span class="branch-row"><span class="branch-name">${safe(item.label)}${depth === 0 ? '' : `<small title="${safe(item.code)}">${safe(item.code)}</small>`}</span><strong>${money(item.amount)}<small>${share(item.amount, branch.total)}</small></strong><span class="branch-arrow" aria-hidden="true">${current ? '' : '→'}</span></span><span class="branch-compare">${priorLine(item, data.fiscalYear)}</span></button></li>`;
   }).join('');
   const key = safe(JSON.stringify([group, fundCode, depth, prefix]));
   return `<section class="branch-column ${ancestor ? 'is-ancestor' : `is-entering${animate ? ' is-animated' : ''}`}" data-branch-level="${depth}" data-branch-key="${key}" aria-label="${safe(level.name)}"><header class="branch-column-head"><span><strong>${safe(level.name)}</strong><small>${depth === 0 && !path.length ? `FY${safe(data.fiscalYear)} amount / share` : `Level ${depth + 1} of ${spendingLevels.length}`}</small></span><p>${depth === 0 && !path.length ? 'Bars show each area’s share of recorded spending.' : safe(level.description)}</p></header><ul>${rows}</ul></section>`;

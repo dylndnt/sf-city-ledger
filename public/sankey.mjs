@@ -208,7 +208,7 @@ export function renderSankey(data, group = 'All city funds', fundCode = '', prev
   }).join('');
   const sourceNodes = layout.sources.map((node, index) => `<g data-node="source">
     <rect x="${node.x}" y="${node.portY}" width="10" height="${Math.max(1, node.flowHeight)}" rx="2" fill="${sourceColors[index % sourceColors.length]}"/>
-    ${nodeLabel(node, node.x - 15, 'end', 23, node.cents)}</g>`).join('');
+    ${nodeLabel(node, node.x - 15, 'end', 18, node.cents)}</g>`).join('');
   const fundNodes = layout.funds.map((node, index) => `<g data-node="fund">
     <rect x="${node.x}" y="${node.y}" width="230" height="${node.height}" rx="7" fill="#173e43"/>
     <rect x="${node.x}" y="${node.y}" width="5" height="${node.height}" rx="2" fill="${fundColors[index % fundColors.length]}"/>
@@ -221,15 +221,15 @@ export function renderSankey(data, group = 'All city funds', fundCode = '', prev
     ${nodeLabel(node, node.x + 17, 'start', 26, node.cents)}</g>`).join('');
   const adjustments = adjustmentReconciliation(graph, previousGraph, 'revenue')
     + adjustmentReconciliation(graph, previousGraph, 'spending');
-  return `<figure class="sankey-figure"><div class="sankey-mobile-nav"><span>Explore the flow</span><button type="button" data-jump-spending>Jump to spending areas →</button></div>${adjustments}<p class="sankey-scroll-hint">Swipe to see funds and spending →</p><div class="sankey-scroll" role="region" aria-label="Fund Sankey diagram; scroll horizontally on small screens" tabindex="0">
+  return `<figure class="sankey-figure"><div class="sankey-mobile-nav"><span>Explore the flow</span><button type="button" data-jump-spending>Jump to spending areas →</button></div><p class="sankey-scroll-hint">Swipe to see funds and spending →</p><div class="sankey-scroll" role="region" aria-label="Fund Sankey diagram; scroll horizontally on small screens" tabindex="0">
     <svg viewBox="0 0 1200 610" role="group" aria-labelledby="sankey-title sankey-description" xmlns="http://www.w3.org/2000/svg">
       <title id="sankey-title">FY2025 fund Sankey: revenue, city funds, and spending</title>
-      <desc id="sankey-description">Revenue categories feed fund groups in the middle. Separate ribbons go from those funds to spending areas. Negative accounting entries are reconciled above the diagram. The two sides are independent accounting actuals.</desc>
+      <desc id="sankey-description">Revenue categories feed fund groups in the middle. Separate ribbons go from those funds to spending areas. Negative accounting entries are reconciled below the diagram. The two sides are independent accounting actuals.</desc>
       <text x="0" y="34" class="sankey-column-head">REVENUE SOURCES</text>
       <text x="490" y="34" class="sankey-column-head">CITY FUNDS</text>
       <text x="950" y="34" class="sankey-column-head">SPENDING AREAS</text>
       <g class="sankey-links">${revenuePaths}${spendingPaths}</g>
       <g class="sankey-nodes">${sourceNodes}${fundNodes}${useNodes}</g>
-    </svg></div><div class="flow-tooltip" aria-hidden="true" hidden><strong data-tooltip-amount></strong><span data-tooltip-route></span></div>
-    <figcaption>Hover over or focus a ribbon for its exact amount. Ribbon width shows positive recorded amounts; signed adjustments above reconcile the totals. Revenue into funds and spending out of funds are separate accounting views. On narrow screens, scroll to see the whole diagram.</figcaption></figure>`;
+    </svg></div><div class="flow-tooltip" aria-hidden="true" hidden><strong data-tooltip-amount></strong><span data-tooltip-route></span></div>${adjustments}
+    <figcaption>Hover over or focus a ribbon for its exact amount. Ribbon width shows positive recorded amounts; signed adjustments below reconcile the totals. Revenue into funds and spending out of funds are separate accounting views. On narrow screens, scroll to see the whole diagram.</figcaption></figure>`;
 }
